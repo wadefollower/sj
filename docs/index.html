@@ -917,6 +917,80 @@
     .answer-result .pair-text { font-size: var(--ui-font-16); }
     .answer-result .small-note { margin-top: 10px; }
 
+    .text-diff {
+      margin-top: 14px;
+      padding: 13px;
+      border: 1px solid rgba(115, 107, 96, .18);
+      border-radius: 13px;
+      background: #faf8f3;
+    }
+
+    .text-diff-summary {
+      margin: 0 0 12px;
+      color: var(--accent-deep, var(--accent));
+      font-size: var(--ui-font-13);
+      font-weight: 850;
+    }
+
+    .text-diff-label {
+      margin: 10px 0 5px;
+      color: var(--muted);
+      font-size: var(--ui-font-12);
+      font-weight: 800;
+    }
+
+    .text-diff-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px;
+      font-family: ui-monospace, "SFMono-Regular", "PingFang SC", monospace;
+      font-size: var(--ui-font-16);
+      line-height: 1.8;
+    }
+
+    .text-diff-char {
+      display: inline-grid;
+      place-items: center;
+      width: 1.55em;
+      min-height: 1.7em;
+      border-radius: 5px;
+    }
+
+    .text-diff-char.user-error {
+      color: #8f3529;
+      background: rgba(178, 77, 53, .14);
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .text-diff-char.user-missing {
+      color: #a8533f;
+      border: 1px dashed rgba(168, 83, 63, .55);
+      background: rgba(178, 77, 53, .07);
+    }
+
+    .text-diff-char.correct-error {
+      color: #176342;
+      background: rgba(47, 139, 87, .14);
+      font-weight: 900;
+    }
+
+    .text-diff-char.correct-extra {
+      color: var(--muted);
+      border: 1px dashed rgba(115, 107, 96, .36);
+    }
+
+    .text-diff-errors {
+      margin: 12px 0 0;
+      padding: 11px 11px 11px 32px;
+      border-radius: 10px;
+      color: #773b31;
+      background: rgba(178, 77, 53, .07);
+      font-size: var(--ui-font-13);
+      line-height: 1.65;
+    }
+
     /* Shared visual polish across every tab. */
     .shell { background: #fcfaf5; }
 
@@ -2813,6 +2887,9 @@
         yourReference: "你的章节",
         correctReference: "正确章节",
         textCompleteness: "正文完整度",
+        yourTextAnswer: "你的答案（仅显示计分汉字）",
+        correctTextAnswer: "正确答案（仅显示计分汉字）",
+        exactTextMatch: "逐字完全一致",
         auditRule: "章节全部正确，并且每一处正文去除标点和空格后均为 100%，才标记为已背熟。",
         retryRecall: "重新背诵",
         answerTitle: "完整答案",
@@ -2962,6 +3039,9 @@
         yourReference: "Your reference",
         correctReference: "Correct reference",
         textCompleteness: "Text completeness",
+        yourTextAnswer: "Your answer (scored Chinese characters only)",
+        correctTextAnswer: "Correct answer (scored Chinese characters only)",
+        exactTextMatch: "Every scored character matches",
         auditRule: "All references must be correct and every text must be 100% after punctuation and spaces are ignored.",
         retryRecall: "Recall again",
         answerTitle: "Full answer",
@@ -3299,12 +3379,9 @@
       selfTestChecked: false,
       libraryFilter: "all",
       customVerses: Array.isArray(savedState.customVerses) ? savedState.customVerses : [],
-      favorites: new Set(Array.isArray(savedState.favorites) ? savedState.favorites : ["assurance-salvation"]),
+      favorites: new Set(Array.isArray(savedState.favorites) ? savedState.favorites : []),
       pairProgress: isPlainObject(savedState.pairProgress) ? savedState.pairProgress : {},
-      progress: savedState.progress || {
-        "assurance-salvation": { reviewCount: 2, isMemorized: true, lastReviewedAtKey: "todayTime" },
-        "assurance-prayer": { reviewCount: 1, isMemorized: false, lastReviewedAtKey: "yesterdayTime" }
-      }
+      progress: isPlainObject(savedState.progress) ? savedState.progress : {}
     };
 
     const app = document.querySelector("#app");
@@ -3767,6 +3844,121 @@
       return Math.max(0, Math.round((1 - distance / longest) * 100));
     }
 
+    function chineseTextDiff(source, typed) {
+      const sourceChars = Array.from(source || "").filter(isChineseChar);
+      const typedChars = Array.from(typed || "").filter(isChineseChar);
+      if (!sourceChars.length) return null;
+
+      const rows = sourceChars.length + 1;
+      const columns = typedChars.length + 1;
+      const matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
+      for (let row = 0; row < rows; row += 1) matrix[row][0] = row;
+      for (let column = 0; column < columns; column += 1) matrix[0][column] = column;
+
+      for (let row = 1; row < rows; row += 1) {
+        for (let column = 1; column < columns; column += 1) {
+          const substitutionCost = sourceChars[row - 1] === typedChars[column - 1] ? 0 : 1;
+          matrix[row][column] = Math.min(
+            matrix[row - 1][column] + 1,
+            matrix[row][column - 1] + 1,
+            matrix[row - 1][column - 1] + substitutionCost
+          );
+        }
+      }
+
+      const operations = [];
+      let row = sourceChars.length;
+      let column = typedChars.length;
+      while (row > 0 || column > 0) {
+        if (
+          row > 0
+          && column > 0
+          && sourceChars[row - 1] === typedChars[column - 1]
+          && matrix[row][column] === matrix[row - 1][column - 1]
+        ) {
+          operations.push({ type: "equal", source: sourceChars[row - 1], typed: typedChars[column - 1] });
+          row -= 1;
+          column -= 1;
+        } else if (row > 0 && column > 0 && matrix[row][column] === matrix[row - 1][column - 1] + 1) {
+          operations.push({ type: "replace", source: sourceChars[row - 1], typed: typedChars[column - 1] });
+          row -= 1;
+          column -= 1;
+        } else if (row > 0 && matrix[row][column] === matrix[row - 1][column] + 1) {
+          operations.push({ type: "missing", source: sourceChars[row - 1], typed: null });
+          row -= 1;
+        } else {
+          operations.push({ type: "extra", source: null, typed: typedChars[column - 1] });
+          column -= 1;
+        }
+      }
+
+      operations.reverse();
+      let sourcePosition = 0;
+      const errors = [];
+      const counts = { replace: 0, missing: 0, extra: 0 };
+      operations.forEach((operation) => {
+        if (operation.type === "extra") {
+          counts.extra += 1;
+          const position = sourcePosition
+            ? `${state.lang === "zh" ? `第 ${sourcePosition} 字后` : `after character ${sourcePosition}`}`
+            : (state.lang === "zh" ? "开头" : "at the beginning");
+          errors.push(state.lang === "zh"
+            ? `${position}多写“${operation.typed}”`
+            : `Extra “${operation.typed}” ${position}`);
+          return;
+        }
+
+        sourcePosition += 1;
+        if (operation.type === "replace") {
+          counts.replace += 1;
+          errors.push(state.lang === "zh"
+            ? `第 ${sourcePosition} 字：你写“${operation.typed}”，应为“${operation.source}”`
+            : `Character ${sourcePosition}: wrote “${operation.typed}”, expected “${operation.source}”`);
+        }
+        if (operation.type === "missing") {
+          counts.missing += 1;
+          errors.push(state.lang === "zh"
+            ? `第 ${sourcePosition} 字：漏写“${operation.source}”`
+            : `Character ${sourcePosition}: missing “${operation.source}”`);
+        }
+      });
+
+      return { operations, errors, counts };
+    }
+
+    function chineseTextDiffHTML(item) {
+      const diff = chineseTextDiff(contentOf(item.verse).text, item.answer.text || "");
+      if (!diff) return "";
+
+      const userLine = diff.operations.map((operation) => {
+        if (operation.type === "missing") return `<span class="text-diff-char user-missing" aria-label="漏字">□</span>`;
+        const className = operation.type === "equal" ? "" : " user-error";
+        return `<span class="text-diff-char${className}">${escapeHTML(operation.typed)}</span>`;
+      }).join("");
+      const correctLine = diff.operations.map((operation) => {
+        if (operation.type === "extra") return `<span class="text-diff-char correct-extra" aria-label="多字位置">□</span>`;
+        const className = operation.type === "equal" ? "" : " correct-error";
+        return `<span class="text-diff-char${className}">${escapeHTML(operation.source)}</span>`;
+      }).join("");
+      const hasErrors = diff.errors.length > 0;
+      const summary = hasErrors
+        ? (state.lang === "zh"
+          ? `错 ${diff.counts.replace} 字 · 漏 ${diff.counts.missing} 字 · 多 ${diff.counts.extra} 字`
+          : `${diff.counts.replace} wrong · ${diff.counts.missing} missing · ${diff.counts.extra} extra`)
+        : t("exactTextMatch");
+
+      return `
+        <div class="text-diff">
+          <p class="text-diff-summary">${summary}</p>
+          <p class="text-diff-label">${t("yourTextAnswer")}</p>
+          <div class="text-diff-line">${userLine}</div>
+          <p class="text-diff-label">${t("correctTextAnswer")}</p>
+          <div class="text-diff-line">${correctLine}</div>
+          ${hasErrors ? `<ol class="text-diff-errors">${diff.errors.map((error) => `<li>${escapeHTML(error)}</li>`).join("")}</ol>` : ""}
+        </div>
+      `;
+    }
+
     function auditPair(pair) {
       const evaluateAnswer = (answer, verse, answerIndex) => {
         const expected = parsedReference(verse);
@@ -3861,6 +4053,7 @@
           <p class="small-note">${t("yourReference")}：${escapeHTML(formatAnswerReference(item.answer))}</p>
           <h3 class="pair-reference">${t("correctReference")}：${escapeHTML(scriptureReference(item.verse))}</h3>
           <p class="pair-text">${escapeHTML(contentOf(item.verse).text)}</p>
+          ${chineseTextDiffHTML(item)}
         </section>
       `).join("");
     }
@@ -4341,6 +4534,7 @@
         <div class="scripture-panel">
           <textarea id="answerInput" placeholder="${t("selfTestPlaceholder")}">${escapeHTML(state.answer)}</textarea>
           <p class="compare">${escapeHTML(compareText(verse))}</p>
+          ${state.selfTestChecked ? chineseTextDiffHTML({ verse, answer: { text: state.answer } }) : ""}
         </div>
       `;
     }
