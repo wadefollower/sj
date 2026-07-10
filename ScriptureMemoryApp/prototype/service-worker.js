@@ -1,4 +1,4 @@
-const CACHE_NAME = "scripture-memory-pwa-v16";
+const CACHE_NAME = "scripture-memory-pwa-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
