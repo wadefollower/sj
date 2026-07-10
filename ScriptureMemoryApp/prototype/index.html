@@ -3299,12 +3299,9 @@
       selfTestChecked: false,
       libraryFilter: "all",
       customVerses: Array.isArray(savedState.customVerses) ? savedState.customVerses : [],
-      favorites: new Set(Array.isArray(savedState.favorites) ? savedState.favorites : ["assurance-salvation"]),
+      favorites: new Set(Array.isArray(savedState.favorites) ? savedState.favorites : []),
       pairProgress: isPlainObject(savedState.pairProgress) ? savedState.pairProgress : {},
-      progress: savedState.progress || {
-        "assurance-salvation": { reviewCount: 2, isMemorized: true, lastReviewedAtKey: "todayTime" },
-        "assurance-prayer": { reviewCount: 1, isMemorized: false, lastReviewedAtKey: "yesterdayTime" }
-      }
+      progress: isPlainObject(savedState.progress) ? savedState.progress : {}
     };
 
     const app = document.querySelector("#app");
