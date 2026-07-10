@@ -1,0 +1,4607 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2f7567">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="背经">
+  <meta name="description" content="一个可离线使用的经文背诵 PWA。">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-512.png">
+  <title>背经</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --surface: #fffdf8;
+      --surface-2: #efe9df;
+      --text: #27231e;
+      --muted: #736b60;
+      --line: #dfd6ca;
+      --accent: #2f7567;
+      --accent-2: #b24d35;
+      --gold: #c88b2d;
+      --green: #2f8b57;
+      --shadow: 0 18px 55px rgba(72, 57, 38, .15);
+      --ui-font-11: 11px;
+      --ui-font-12: 12px;
+      --ui-font-13: 13px;
+      --ui-font-14: 14px;
+      --ui-font-15: 15px;
+      --ui-font-16: 16px;
+      --ui-font-17: 17px;
+      --ui-font-18: 18px;
+      --ui-font-20: 20px;
+      --ui-font-24: 24px;
+      --ui-font-28: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-size: var(--ui-font-16);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(47, 117, 103, .12), transparent 42%),
+        linear-gradient(315deg, rgba(178, 77, 53, .10), transparent 38%),
+        var(--bg);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .shell {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .title-block {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lang-switch {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 10px;
+      min-width: 72px;
+    }
+
+    .top-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+
+    .font-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .font-btn {
+      min-width: 34px;
+      height: 30px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .font-btn:disabled {
+      color: #bdb4a7;
+      cursor: default;
+    }
+
+    .font-size-label {
+      min-width: 44px;
+      text-align: center;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .content {
+      min-height: 0;
+      overflow: auto;
+      padding: 16px 16px 88px;
+    }
+
+    .section-title {
+      margin: 22px 2px 10px;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(92, 72, 42, .07);
+    }
+
+    .verse-card {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .verse-card:active {
+      transform: translateY(1px);
+    }
+
+    .verse-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .ref {
+      font-weight: 800;
+      font-size: 17px;
+    }
+
+    .star {
+      margin-left: auto;
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    .verse-text {
+      margin: 0;
+      font-size: var(--list-font-size, 16px);
+      line-height: 1.55;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pill.done {
+      background: rgba(47, 139, 87, .12);
+      color: var(--green);
+    }
+
+    .pill.practice {
+      background: rgba(178, 77, 53, .10);
+      color: var(--accent-2);
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: #fff;
+      color: var(--text);
+      outline-color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .library-filter {
+      margin-bottom: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--text);
+      outline-color: var(--accent);
+    }
+
+    .add-card {
+      margin-bottom: 16px;
+      background: #fbf7ef;
+    }
+
+    .add-card summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--accent);
+      list-style-position: inside;
+    }
+
+    .add-card .form-grid {
+      margin-top: 12px;
+    }
+
+    .backup-warning {
+      border: 1px solid rgba(178, 77, 53, .28);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: rgba(178, 77, 53, .08);
+      color: var(--accent-2);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .backup-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 4px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      margin-bottom: 14px;
+    }
+
+    .segmented button {
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 4px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .segmented button.active {
+      color: var(--text);
+      background: #fff;
+      box-shadow: 0 1px 6px rgba(64, 47, 25, .12);
+    }
+
+    .scripture-panel {
+      min-height: 180px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+      font-size: var(--reader-font-size, 20px);
+      line-height: 1.75;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      color: var(--text);
+      outline-color: var(--accent);
+    }
+
+    .compare {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .speech-controls,
+    .listen-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .speech-rate,
+    .loop-mode {
+      grid-column: 1 / -1;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--text);
+      outline-color: var(--accent);
+    }
+
+    .listen-picker {
+      display: grid;
+      gap: 10px;
+    }
+
+    .listen-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .listen-actions .btn {
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    .listen-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .listen-item.active {
+      border-color: var(--accent);
+      background: rgba(47, 117, 103, .08);
+    }
+
+    .listen-item input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+
+    .listen-item strong {
+      display: block;
+      margin-bottom: 5px;
+      line-height: 1.35;
+    }
+
+    .listen-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--list-font-size, 16px);
+      line-height: 1.5;
+    }
+
+    .btn {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn.warn {
+      border-color: rgba(178, 77, 53, .35);
+      color: var(--accent-2);
+    }
+
+    .compare-link {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 10px;
+      background: #fff;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 44px 20px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .45);
+    }
+
+    .tabbar {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(430px, 100%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--line);
+      background: rgba(255, 253, 248, .94);
+      backdrop-filter: blur(16px);
+      padding: 6px 8px 10px;
+      z-index: 10;
+    }
+
+    .tabbar button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 8px 4px;
+      min-height: 54px;
+      display: grid;
+      gap: 3px;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tabbar button.active {
+      color: var(--accent);
+      background: rgba(47, 117, 103, .10);
+    }
+
+    .tab-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .detail-back {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 800;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    .detail-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .detail-title-row h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.16;
+      flex: 1;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--gold);
+      font-size: 20px;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 8px 2px 0;
+    }
+
+    /* The size control scales the complete interface, not only verse text. */
+    .lang-switch, .eyebrow, .small-note, .memory-hero p, .pair-card p, .pair-kicker { font-size: var(--ui-font-13); }
+    .font-size-label, .pill, .stat span, .pair-progress { font-size: var(--ui-font-12); }
+    .tabbar button { font-size: var(--ui-font-11); }
+    .section-title { font-size: var(--ui-font-15); }
+    .segmented button, .listen-actions .btn, .rating-grid .btn { font-size: var(--ui-font-13); }
+    .compare, .recall-instruction { font-size: var(--ui-font-14); }
+    .ref, .pair-card strong, .pair-reference { font-size: var(--ui-font-17); }
+    h1, .detail-title-row h2, .pair-practice-header h2, .recall-topic { font-size: var(--ui-font-28); }
+    .stat strong { font-size: var(--ui-font-24); }
+    .tab-icon, .icon-btn, .memory-hero h2 { font-size: var(--ui-font-20); }
+
+    .memory-hero {
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(145deg, #1f665a, #2f7567 55%, #438d7d);
+      color: #fff;
+      border: 0;
+      padding: 18px;
+    }
+
+    .memory-hero::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -55px;
+      top: -70px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .10);
+    }
+
+    .memory-hero h2,
+    .memory-hero p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .memory-hero h2 {
+      margin: 0 0 7px;
+    }
+
+    .memory-hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, .86);
+      line-height: 1.55;
+    }
+
+    .memory-sections {
+      display: flex;
+      gap: 6px;
+      margin: 14px 0;
+      overflow-x: auto;
+      padding: 2px 0 5px;
+      scrollbar-width: none;
+    }
+
+    .memory-sections::-webkit-scrollbar { display: none; }
+
+    .memory-sections button {
+      min-height: 42px;
+      min-width: 48px;
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-weight: 900;
+      padding: 8px 15px;
+    }
+
+    .memory-sections button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .pair-card {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px 14px;
+      min-height: 118px;
+      background: linear-gradient(155deg, #fff, #fbf7ef);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 9px;
+      box-shadow: 0 8px 22px rgba(72, 57, 38, .07);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .pair-card:active { transform: scale(.98); }
+
+    .topic-order {
+      color: var(--accent);
+      font-size: var(--ui-font-12);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .pair-card strong { line-height: 1.35; }
+
+    .pair-progress {
+      color: var(--accent);
+      font-weight: 800;
+      margin-top: auto;
+    }
+
+    .pair-practice-header {
+      text-align: center;
+      padding: 10px 6px 18px;
+    }
+
+    .pair-kicker {
+      margin: 0 0 7px;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .pair-practice-header h2 {
+      margin: 0;
+    }
+
+    .pair-practice-header .small-note {
+      margin-top: 9px;
+    }
+
+    .pair-verse {
+      border-left: 4px solid var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .pair-number {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(47, 117, 103, .12);
+      color: var(--accent);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .pair-reference {
+      margin: 0 0 10px;
+      color: var(--accent);
+    }
+
+    .pair-text {
+      margin: 0;
+      font-size: var(--reader-font-size, 20px);
+      line-height: 1.75;
+    }
+
+    .recall-stage {
+      min-height: 330px;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(47, 117, 103, .12), transparent 34%),
+        linear-gradient(160deg, #f1ece2, #fffdf8);
+      border: 1px solid rgba(47, 117, 103, .20);
+      border-radius: 22px;
+      padding: 34px 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 18px 42px rgba(72, 57, 38, .10);
+    }
+
+    .recall-stage .pair-kicker { color: var(--muted); }
+
+    .recall-topic {
+      margin: 8px 0 10px;
+      line-height: 1.3;
+      color: #1f5f54;
+    }
+
+    .recall-instruction {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .rating-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .rating-grid .btn {
+      min-width: 0;
+      padding: 8px 4px;
+    }
+
+    .practice-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 4px 0 18px;
+    }
+
+    .practice-step {
+      border-top: 3px solid var(--line);
+      padding-top: 7px;
+      color: var(--muted);
+      font-size: var(--ui-font-12);
+      font-weight: 800;
+    }
+
+    .practice-step.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .answer-sheet {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 28px rgba(72, 57, 38, .07);
+    }
+
+    .answer-sheet h3 {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: var(--ui-font-15);
+    }
+
+    .reference-inputs {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(58px, .65fr) minmax(68px, .75fr);
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+
+    .reference-inputs select,
+    .reference-inputs input {
+      min-width: 0;
+      padding: 10px 8px;
+    }
+
+    .answer-sheet textarea {
+      min-height: 138px;
+      font-size: var(--ui-font-16);
+      line-height: 1.65;
+    }
+
+    .result-summary {
+      text-align: center;
+      border-radius: 20px;
+      padding: 20px 16px;
+      margin-bottom: 14px;
+      background: linear-gradient(145deg, rgba(47, 117, 103, .12), rgba(255, 253, 248, .9));
+      border: 1px solid rgba(47, 117, 103, .22);
+    }
+
+    .result-score {
+      display: grid;
+      place-items: center;
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: var(--ui-font-24);
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(47, 117, 103, .24);
+    }
+
+    .result-summary h2 { margin: 0 0 6px; }
+    .result-summary p { margin: 0; color: var(--muted); }
+
+    .answer-result {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .answer-result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .answer-result-head strong { color: var(--accent); }
+
+    .score-badge {
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: var(--ui-font-12);
+      font-weight: 900;
+      background: rgba(47, 139, 87, .12);
+      color: var(--green);
+    }
+
+    .score-badge.needs-work {
+      background: rgba(178, 77, 53, .10);
+      color: var(--accent-2);
+    }
+
+    .answer-result .pair-text { font-size: var(--ui-font-16); }
+    .answer-result .small-note { margin-top: 10px; }
+
+    /* Shared visual polish across every tab. */
+    .shell { background: #fcfaf5; }
+
+    .topbar {
+      border-bottom: 0;
+      box-shadow: 0 8px 28px rgba(72, 57, 38, .07);
+    }
+
+    .content { padding-top: 19px; }
+
+    .card,
+    .verse-card,
+    .search,
+    .field,
+    select,
+    textarea,
+    .btn,
+    .segmented,
+    .scripture-panel,
+    .stat,
+    .listen-item,
+    .backup-warning,
+    .icon-btn,
+    .font-controls,
+    .lang-switch {
+      border-radius: 13px;
+    }
+
+    .card,
+    .verse-card,
+    .stat,
+    .listen-item {
+      border-color: rgba(115, 107, 96, .20);
+      box-shadow: 0 10px 28px rgba(72, 57, 38, .06);
+    }
+
+    .verse-card {
+      padding: 16px;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .verse-card:active {
+      transform: scale(.99);
+      box-shadow: 0 5px 14px rgba(72, 57, 38, .08);
+    }
+
+    .btn {
+      min-height: 48px;
+      box-shadow: 0 5px 14px rgba(72, 57, 38, .06);
+    }
+
+    .btn.primary {
+      box-shadow: 0 10px 22px rgba(47, 117, 103, .20);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47, 117, 103, .10);
+      outline: 0;
+    }
+
+    .tabbar {
+      border-top: 0;
+      box-shadow: 0 -10px 28px rgba(72, 57, 38, .08);
+    }
+
+    .tabbar button { border-radius: 12px; }
+
+    .section-title {
+      letter-spacing: .02em;
+      color: #625a50;
+    }
+
+    /* Quiet, premium visual language for a daily spiritual practice. */
+    :root {
+      --bg: #eeebe3;
+      --surface: #fffdf8;
+      --surface-2: #f0ece3;
+      --text: #1e2925;
+      --muted: #69716d;
+      --line: #ddd8ce;
+      --accent: #29695d;
+      --accent-deep: #174c44;
+      --accent-soft: #e7f0eb;
+      --accent-2: #a8533f;
+      --gold: #c49a58;
+      --green: #2d8056;
+      --shadow: 0 24px 70px rgba(38, 48, 43, .14);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 4%, rgba(196, 154, 88, .13), transparent 25%),
+        radial-gradient(circle at 86% 92%, rgba(41, 105, 93, .13), transparent 30%),
+        var(--bg);
+    }
+
+    .shell {
+      width: min(460px, 100%);
+      background:
+        linear-gradient(rgba(255, 253, 248, .86), rgba(255, 253, 248, .86)),
+        repeating-linear-gradient(0deg, transparent 0 31px, rgba(41, 105, 93, .018) 31px 32px);
+    }
+
+    .topbar {
+      padding: 20px 18px 15px;
+      background: rgba(255, 253, 248, .88);
+      box-shadow: 0 10px 35px rgba(38, 48, 43, .06);
+    }
+
+    .topbar-main { align-items: center; }
+
+    .eyebrow {
+      margin-bottom: 5px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .09em;
+    }
+
+    h1,
+    .detail-title-row h2,
+    .memory-hero h2,
+    .pair-card strong,
+    .recall-topic,
+    .pair-practice-header h2,
+    .result-summary h2 {
+      font-family: ui-serif, "Songti SC", "STSong", "Iowan Old Style", Georgia, serif;
+    }
+
+    h1 {
+      color: #17231f;
+      font-weight: 850;
+      letter-spacing: -.035em;
+    }
+
+    .top-actions { gap: 7px; }
+
+    .lang-switch,
+    .font-controls {
+      border-color: rgba(41, 105, 93, .16);
+      background: rgba(255, 255, 255, .74);
+      box-shadow: 0 6px 18px rgba(38, 48, 43, .05);
+    }
+
+    .lang-switch {
+      color: var(--accent-deep);
+      padding: 7px 11px;
+    }
+
+    .font-btn { color: var(--accent-deep); }
+
+    .content {
+      padding: 20px 16px 108px;
+      scroll-behavior: smooth;
+    }
+
+    .memory-hero {
+      border-radius: 24px;
+      padding: 22px 20px 19px;
+      background:
+        radial-gradient(circle at 91% 12%, rgba(235, 210, 164, .25), transparent 28%),
+        linear-gradient(145deg, #174d45, #2c7164 62%, #438779);
+      box-shadow: 0 20px 42px rgba(29, 83, 74, .24);
+      isolation: isolate;
+    }
+
+    .memory-hero::after {
+      width: 180px;
+      height: 180px;
+      right: -75px;
+      top: -88px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      background: transparent;
+      box-shadow: 0 0 0 26px rgba(255, 255, 255, .035), 0 0 0 52px rgba(255, 255, 255, .025);
+      z-index: -1;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 14px;
+      color: #ead7b4;
+      font-size: var(--ui-font-12);
+      font-weight: 850;
+      letter-spacing: .08em;
+    }
+
+    .hero-spark {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(234, 215, 180, .14);
+    }
+
+    .memory-hero h2 {
+      max-width: 310px;
+      margin-bottom: 9px;
+      font-weight: 800;
+      line-height: 1.28;
+      letter-spacing: -.02em;
+    }
+
+    .memory-hero p { max-width: 350px; }
+
+    .hero-progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 19px;
+      color: rgba(255, 255, 255, .78);
+      font-size: var(--ui-font-12);
+      font-weight: 750;
+    }
+
+    .hero-progress-row strong { color: #fff; }
+
+    .hero-progress-track {
+      height: 5px;
+      overflow: hidden;
+      margin-top: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .17);
+    }
+
+    .hero-progress-track span {
+      display: block;
+      min-width: 4px;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ead7b4, #fff3d7);
+      box-shadow: 0 0 12px rgba(255, 235, 196, .45);
+    }
+
+    .memory-sections {
+      margin: 18px -2px 15px;
+      gap: 8px;
+    }
+
+    .memory-sections button {
+      min-height: 44px;
+      padding: 8px 17px;
+      border-color: rgba(41, 105, 93, .16);
+      background: rgba(255, 253, 248, .75);
+      box-shadow: 0 5px 15px rgba(38, 48, 43, .04);
+    }
+
+    .memory-sections button.active {
+      background: var(--accent);
+      box-shadow: 0 9px 20px rgba(41, 105, 93, .22);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 17px 2px 11px;
+    }
+
+    .section-heading .section-title {
+      margin: 0;
+      color: #35413c;
+      font-weight: 850;
+    }
+
+    .section-heading > span {
+      color: var(--muted);
+      font-size: var(--ui-font-12);
+      font-weight: 750;
+    }
+
+    .topic-grid { gap: 11px; }
+
+    .pair-card {
+      position: relative;
+      min-height: 132px;
+      padding: 15px;
+      overflow: hidden;
+      border-color: rgba(67, 80, 74, .13);
+      border-radius: 19px;
+      background:
+        radial-gradient(circle at 100% 0, rgba(196, 154, 88, .08), transparent 38%),
+        rgba(255, 253, 248, .90);
+      box-shadow: 0 11px 28px rgba(38, 48, 43, .075);
+    }
+
+    .pair-card::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(41, 105, 93, .22), transparent);
+      opacity: 0;
+    }
+
+    .pair-card:hover,
+    .pair-card:focus-visible {
+      border-color: rgba(41, 105, 93, .28);
+      box-shadow: 0 16px 35px rgba(38, 48, 43, .11);
+      transform: translateY(-2px);
+    }
+
+    .pair-card:hover::after,
+    .pair-card:focus-visible::after { opacity: 1; }
+
+    .pair-card.mastered {
+      border-color: rgba(45, 128, 86, .22);
+      background: linear-gradient(145deg, #edf6f0, #fffdf8 78%);
+    }
+
+    .pair-card.practicing {
+      border-color: rgba(196, 154, 88, .26);
+      background: linear-gradient(145deg, #fff9ed, #fffdf8 78%);
+    }
+
+    .topic-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .topic-order {
+      color: #5c857c;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .topic-arrow {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: var(--ui-font-15);
+      transition: transform .15s ease;
+    }
+
+    .pair-card:hover .topic-arrow { transform: translateX(2px); }
+
+    .pair-card strong {
+      color: #202b27;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+
+    .pair-progress {
+      color: #638179;
+      font-weight: 800;
+    }
+
+    .pair-card.mastered .pair-progress { color: var(--green); }
+    .pair-card.practicing .pair-progress { color: #9a7440; }
+
+    .recall-stage {
+      position: relative;
+      overflow: hidden;
+      min-height: 370px;
+      border: 0;
+      border-radius: 26px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(224, 202, 159, .15), transparent 28%),
+        linear-gradient(150deg, #143f39, #255f55 60%, #39796c);
+      box-shadow: 0 24px 48px rgba(28, 73, 66, .24);
+    }
+
+    .recall-stage::before,
+    .recall-stage::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 245px;
+      height: 245px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .recall-stage::after {
+      width: 315px;
+      height: 315px;
+      border-color: rgba(255, 255, 255, .045);
+    }
+
+    .recall-stage > * { position: relative; z-index: 1; }
+    .recall-stage .pair-kicker { color: #ead7b4; }
+
+    .recall-topic {
+      color: #fffdf8;
+      font-weight: 850;
+      letter-spacing: -.03em;
+    }
+
+    .recall-instruction { color: rgba(255, 255, 255, .70); }
+
+    .practice-steps {
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .practice-step {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 7px;
+      text-align: center;
+      background: rgba(105, 113, 109, .08);
+    }
+
+    .practice-step.active {
+      color: var(--accent-deep);
+      background: var(--accent-soft);
+    }
+
+    .answer-sheet,
+    .answer-result {
+      border-color: rgba(67, 80, 74, .13);
+      border-radius: 19px;
+      box-shadow: 0 12px 30px rgba(38, 48, 43, .07);
+    }
+
+    .btn {
+      border-radius: 15px;
+      border-color: rgba(67, 80, 74, .16);
+    }
+
+    .btn.primary {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent));
+      box-shadow: 0 12px 24px rgba(41, 105, 93, .22);
+    }
+
+    .tabbar {
+      width: min(460px, 100%);
+      padding: 8px 9px 12px;
+      background: rgba(255, 253, 248, .90);
+      box-shadow: 0 -10px 36px rgba(38, 48, 43, .09);
+    }
+
+    .tabbar button {
+      min-height: 58px;
+      border-radius: 15px;
+      transition: color .15s ease, background .15s ease, transform .15s ease;
+    }
+
+    .tabbar button.active {
+      color: var(--accent-deep);
+      background: linear-gradient(145deg, rgba(41, 105, 93, .14), rgba(41, 105, 93, .07));
+    }
+
+    .tabbar button:active { transform: scale(.97); }
+
+    .tab-icon {
+      width: 23px;
+      height: 23px;
+    }
+
+    .tab-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes gentle-rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .memory-hero,
+    .topic-grid,
+    .recall-stage,
+    .answer-sheet,
+    .result-summary {
+      animation: gentle-rise .32s ease both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    .tab-hero {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: start;
+      overflow: hidden;
+      min-height: 150px;
+      padding: 19px;
+      border-radius: 24px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 92% 8%, rgba(234, 215, 180, .22), transparent 30%),
+        linear-gradient(145deg, #174d45, #2c7164 65%, #438779);
+      box-shadow: 0 20px 42px rgba(29, 83, 74, .22);
+      animation: gentle-rise .32s ease both;
+    }
+
+    .tab-hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 170px;
+      height: 170px;
+      right: -82px;
+      top: -88px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+      box-shadow: 0 0 0 25px rgba(255, 255, 255, .03), 0 0 0 50px rgba(255, 255, 255, .02);
+    }
+
+    .tab-hero-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      color: #ead7b4;
+      background: rgba(255, 255, 255, .10);
+      border: 1px solid rgba(255, 255, 255, .10);
+    }
+
+    .tab-hero-icon svg {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tab-hero-copy h2 {
+      margin: 1px 0 7px;
+      font-family: ui-serif, "Songti SC", "STSong", "Iowan Old Style", Georgia, serif;
+      font-size: var(--ui-font-20);
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+
+    .tab-hero-copy p {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: rgba(255, 255, 255, .72);
+      font-size: var(--ui-font-13);
+      line-height: 1.6;
+    }
+
+    .tab-hero-stat {
+      display: grid;
+      gap: 2px;
+      min-width: 58px;
+      padding: 8px 9px;
+      border-radius: 13px;
+      text-align: center;
+      background: rgba(255, 255, 255, .10);
+      border: 1px solid rgba(255, 255, 255, .10);
+    }
+
+    .tab-hero-stat strong {
+      font-size: var(--ui-font-18);
+      line-height: 1.1;
+    }
+
+    .tab-hero-stat span {
+      color: rgba(255, 255, 255, .65);
+      font-size: var(--ui-font-11);
+      white-space: nowrap;
+    }
+
+    .library-toolbar {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+      margin-bottom: 11px;
+      border-radius: 18px;
+      background: rgba(255, 253, 248, .82);
+    }
+
+    .library-toolbar .library-filter { margin: 0; }
+
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrap > span {
+      position: absolute;
+      left: 13px;
+      z-index: 1;
+      color: var(--accent);
+      font-size: var(--ui-font-20);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .search-wrap .search {
+      margin: 0;
+      padding-left: 40px;
+    }
+
+    .add-card {
+      border-radius: 18px;
+      background: linear-gradient(145deg, #f5f0e6, #fffdf8);
+      box-shadow: 0 10px 28px rgba(38, 48, 43, .055);
+    }
+
+    .add-card summary {
+      color: var(--accent-deep);
+      font-family: ui-serif, "Songti SC", "STSong", Georgia, serif;
+      font-size: var(--ui-font-16);
+    }
+
+    .list-section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 20px 3px 10px;
+    }
+
+    .list-section-heading .section-title { margin: 0; }
+
+    .list-section-heading > span {
+      display: grid;
+      place-items: center;
+      min-width: 27px;
+      height: 27px;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: var(--ui-font-12);
+      font-weight: 850;
+    }
+
+    .verse-card {
+      border-color: rgba(67, 80, 74, .13);
+      border-radius: 19px;
+      background:
+        radial-gradient(circle at 100% 0, rgba(196, 154, 88, .07), transparent 34%),
+        rgba(255, 253, 248, .92);
+      box-shadow: 0 11px 28px rgba(38, 48, 43, .07);
+    }
+
+    .verse-card .ref {
+      color: #24322d;
+      font-family: ui-serif, "Songti SC", "STSong", Georgia, serif;
+      font-weight: 850;
+    }
+
+    .verse-card .verse-text { color: #3f4945; }
+
+    .pill {
+      background: #f0ece4;
+      color: #69716d;
+    }
+
+    .listen-console {
+      margin-top: 13px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #f4f0e7, #fffdf8);
+    }
+
+    .listen-console > .small-note {
+      margin: 0 0 13px;
+      color: #53605b;
+    }
+
+    .listen-actions .btn {
+      min-height: 42px;
+      border-radius: 999px;
+      color: var(--accent-deep);
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .listen-item {
+      border-color: rgba(67, 80, 74, .13);
+      border-radius: 18px;
+      background: rgba(255, 253, 248, .90);
+    }
+
+    .listen-item.active {
+      border-color: rgba(41, 105, 93, .34);
+      background: var(--accent-soft);
+      box-shadow: 0 10px 24px rgba(41, 105, 93, .10);
+    }
+
+    .listen-item input { accent-color: var(--accent); }
+
+    .listen-item strong {
+      color: #24322d;
+      font-family: ui-serif, "Songti SC", "STSong", Georgia, serif;
+    }
+
+    .progress-overview {
+      padding: 12px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #f4f0e7, #fffdf8);
+    }
+
+    .progress-overview .stat {
+      border: 0;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: none;
+    }
+
+    .progress-overview .stat strong {
+      color: var(--accent-deep);
+      font-family: ui-serif, "Songti SC", "STSong", Georgia, serif;
+    }
+
+    .empty {
+      border-color: rgba(41, 105, 93, .22);
+      border-radius: 20px;
+      color: var(--muted);
+      background: linear-gradient(145deg, rgba(231, 240, 235, .58), rgba(255, 253, 248, .72));
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding: 26px 0;
+      }
+
+      .shell {
+        min-height: calc(100vh - 52px);
+        border-radius: 28px;
+        overflow: hidden;
+      }
+
+      .tabbar {
+        bottom: 26px;
+        border-radius: 0 0 28px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="topbar-main">
+        <div class="title-block">
+          <p class="eyebrow" id="eyebrow">今日背诵</p>
+          <h1 id="pageTitle">背经</h1>
+        </div>
+        <div class="top-actions">
+          <button class="lang-switch" id="langSwitch">English</button>
+          <div class="font-controls" aria-label="字号调节">
+            <button class="font-btn" id="fontDown" aria-label="减小字号">A-</button>
+            <span class="font-size-label" id="fontSizeLabel">中</span>
+            <button class="font-btn" id="fontUp" aria-label="增大字号">A+</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="content" id="app"></section>
+
+    <nav class="tabbar" aria-label="主导航">
+      <button class="active" data-tab="today"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v17h4.5A2.5 2.5 0 0 1 20 22V5.5Z"/></svg></span><span>今日</span></button>
+      <button data-tab="library"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></svg></span><span>经文库</span></button>
+      <button data-tab="favorites"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91L12 3Z"/></svg></span><span>收藏</span></button>
+      <button data-tab="listen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M18 19h1a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-1v6ZM6 19H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1v6Z"/><path d="M18 19c0 1.1-.9 2-2 2h-3"/></svg></span><span>听经</span></button>
+      <button data-tab="progress"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span>进度</span></button>
+    </nav>
+  </main>
+
+  <script>
+    const builtInVerses = [
+      {
+        "id": "assurance-salvation",
+        "section": "五个确据",
+        "language": "zh",
+        "referenceOverride": "得救的确据 · 约翰一书5:11-12",
+        "zh": {
+          "book": "得救的确据",
+          "text": "这见证就是　神赐给我们永生；这永生也是在他儿子里面。 人有了　神的儿子就有生命，没有　神的儿子就没有生命。",
+          "theme": "五个确据"
+        },
+        "en": {
+          "book": "Assurance of Salvation",
+          "text": "And this is the testimony: God has given us eternal life, and this life is in his Son. Whoever has the Son has life; whoever does not have the Son of God does not have life.",
+          "theme": "Five Assurances"
+        }
+      },
+      {
+        "id": "assurance-prayer",
+        "section": "五个确据",
+        "language": "zh",
+        "referenceOverride": "祷告蒙应许的确据 · 约翰福音16:24",
+        "zh": {
+          "book": "祷告蒙应许的确据",
+          "text": "向来你们没有奉我的名求什么，如今你们求，就必得着，叫你们的喜乐可以满足。\"",
+          "theme": "五个确据"
+        },
+        "en": {
+          "book": "Assurance of Answered Prayer",
+          "text": "Until now you have not asked for anything in my name. Ask and you will receive, and your joy will be complete.",
+          "theme": "Five Assurances"
+        }
+      },
+      {
+        "id": "assurance-forgiveness",
+        "section": "五个确据",
+        "language": "zh",
+        "referenceOverride": "罪得赦免的确据 · 约翰一书1:9",
+        "zh": {
+          "book": "罪得赦免的确据",
+          "text": "我们若认自己的罪，　神是信实的，是公义的，必要赦免我们的罪，洗净我们一切的不义。",
+          "theme": "五个确据"
+        },
+        "en": {
+          "book": "Assurance of Forgiveness",
+          "text": "If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.",
+          "theme": "Five Assurances"
+        }
+      },
+      {
+        "id": "assurance-guidance",
+        "section": "五个确据",
+        "language": "zh",
+        "referenceOverride": "引导的确据 · 箴言3:5-6",
+        "zh": {
+          "book": "引导的确据",
+          "text": "你要专心仰赖耶和华，不可倚靠自己的聪明，在你一切所行的事上都要认定他，他必指引你的路。",
+          "theme": "五个确据"
+        },
+        "en": {
+          "book": "Assurance of Guidance",
+          "text": "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
+          "theme": "Five Assurances"
+        }
+      },
+      {
+        "id": "assurance-victory",
+        "section": "五个确据",
+        "language": "zh",
+        "referenceOverride": "得胜的确据 · 哥林多前书10:13",
+        "zh": {
+          "book": "得胜的确据",
+          "text": "你们所遇见的试探，无非是人所能受的。　神是信实的，必不叫你们受试探过于所能受的；在受试探的时候，总要给你们开一条出路，叫你们能忍受得住。",
+          "theme": "五个确据"
+        },
+        "en": {
+          "book": "Assurance of Victory",
+          "text": "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear. But when you are tempted, he will also provide a way out so that you can endure it.",
+          "theme": "Five Assurances"
+        }
+      },
+      {
+        "id": "a-christ-center-galatians-2-20",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "基督是中心 · 加拉太书2:20",
+        "zh": {
+          "book": "基督是中心",
+          "text": "我已经与基督同钉十字架，现在活着的不再是我，乃是基督在我里面活着；并且我如今在肉身活着，是因信　神的儿子而活；他是爱我，为我舍己。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Christ the Center",
+          "text": "I have been crucified with Christ and I no longer live, but Christ lives in me. The life I now live in the body, I live by faith in the Son of God, who loved me and gave himself for me.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-christ-center-2-corinthians-5-17",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "基督是中心 · 哥林多后书5:17",
+        "zh": {
+          "book": "基督是中心",
+          "text": "若有人在基督里，他就是新造的人，旧事已过，都变成新的了。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Christ the Center",
+          "text": "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-obey-romans-12-1",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "顺服基督 · 罗马书12:1",
+        "zh": {
+          "book": "顺服基督",
+          "text": "所以，弟兄们，我以　神的慈悲劝你们，将身体献上，当作活祭，是圣洁的，是　神所喜悦的；你们如此侍奉乃是理所当然的。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Obedience to Christ",
+          "text": "Therefore, I urge you, brothers and sisters, in view of God's mercy, to offer your bodies as a living sacrifice, holy and pleasing to God—this is your true and proper worship.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-obey-john-14-21",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "顺服基督 · 约翰福音14:21",
+        "zh": {
+          "book": "顺服基督",
+          "text": "有了我的命令又遵守的，这人就是爱我的；爱我的必蒙我父爱他，我也要爱他，并且要向他显现。\"",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Obedience to Christ",
+          "text": "Whoever has my commands and keeps them is the one who loves me. The one who loves me will be loved by my Father, and I too will love them and show myself to them.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-word-2-timothy-3-16",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "神的话 · 提摩太后书3:16",
+        "zh": {
+          "book": "神的话",
+          "text": "圣经都是　神所默示的，于教训、督责、使人归正、教导人学义都是有益的，",
+          "theme": "A"
+        },
+        "en": {
+          "book": "The Word of God",
+          "text": "All Scripture is God-breathed and is useful for teaching, rebuking, correcting and training in righteousness.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-word-joshua-1-8",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "神的话 · 约书亚记1:8",
+        "zh": {
+          "book": "神的话",
+          "text": "这律法书不可离开你的口，总要昼夜思想，好使你谨守遵行这书上所写的一切话。如此，你的道路就可以亨通，凡事顺利。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "The Word of God",
+          "text": "Keep this Book of the Law always on your lips; meditate on it day and night, so that you may be careful to do everything written in it. Then you will be prosperous and successful.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-prayer-john-15-7",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "祷告 · 约翰福音15:7",
+        "zh": {
+          "book": "祷告",
+          "text": "你们若常在我里面，我的话也常在你们里面，凡你们所愿意的，祈求，就给你们成就。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Prayer",
+          "text": "If you remain in me and my words remain in you, ask whatever you wish, and it will be done for you.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-prayer-philippians-4-6-7",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "祷告 · 腓立比书4:6-7",
+        "zh": {
+          "book": "祷告",
+          "text": "应当一无挂虑，只要凡事藉着祷告、祈求，和感谢，将你们所要的告诉　神。 　神所赐出人意外的平安必在基督耶稣里保守你们的心怀意念。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Prayer",
+          "text": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-fellowship-matthew-18-20",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "交通 · 马太福音18:20",
+        "zh": {
+          "book": "交通",
+          "text": "因为无论在哪里，有两三个人奉我的名聚会，那里就有我在他们中间。\"",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Fellowship",
+          "text": "For where two or three gather in my name, there am I with them.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-fellowship-hebrews-10-24-25",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "交通 · 希伯来书10:24-25",
+        "zh": {
+          "book": "交通",
+          "text": "又要彼此相顾，激发爱心，勉励行善。 你们不可停止聚会，好像那些停止惯了的人，倒要彼此劝勉，既知道那日子临近，就更当如此。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Fellowship",
+          "text": "And let us consider how we may spur one another on toward love and good deeds, not giving up meeting together, as some are in the habit of doing, but encouraging one another—and all the more as you see the Day approaching.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-witness-matthew-4-19",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "见证 · 马太福音4:19",
+        "zh": {
+          "book": "见证",
+          "text": "耶稣对他们说：\"来跟从我，我要叫你们得人如得鱼一样。\"",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Witnessing",
+          "text": "\"Come, follow me,\" Jesus said, \"and I will send you out to fish for people.\"",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "a-witness-romans-1-16",
+        "section": "A",
+        "language": "zh",
+        "referenceOverride": "见证 · 罗马书1:16",
+        "zh": {
+          "book": "见证",
+          "text": "我不以福音为耻；这福音本是　神的大能，要救一切相信的，先是犹太人，后是希腊人。",
+          "theme": "A"
+        },
+        "en": {
+          "book": "Witnessing",
+          "text": "For I am not ashamed of the gospel, because it is the power of God that brings salvation to everyone who believes: first to the Jew, then to the Gentile.",
+          "theme": "A"
+        }
+      },
+      {
+        "id": "b-sin-romans-3-23",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "人人有罪 · 罗马书3:23",
+        "zh": {
+          "book": "人人有罪",
+          "text": "因为世人都犯了罪，亏缺了　神的荣耀；",
+          "theme": "B"
+        },
+        "en": {
+          "book": "All Have Sinned",
+          "text": "for all have sinned and fall short of the glory of God.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-sin-isaiah-53-6",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "人人有罪 · 以赛亚书53:6",
+        "zh": {
+          "book": "人人有罪",
+          "text": "我们都如羊走迷；各人偏行己路；耶和华使我们众人的罪孽都归在他身上。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "All Have Sinned",
+          "text": "We all, like sheep, have gone astray, each of us has turned to our own way; and the Lord has laid on him the iniquity of us all.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-penalty-romans-6-23",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "罪的刑罚 · 罗马书6:23",
+        "zh": {
+          "book": "罪的刑罚",
+          "text": "因为罪的工价乃是死；惟有　神的恩赐，在我们的主基督耶稣里，乃是永生。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "The Penalty of Sin",
+          "text": "For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-penalty-hebrews-9-27",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "罪的刑罚 · 希伯来书9:27",
+        "zh": {
+          "book": "罪的刑罚",
+          "text": "按着定命，人人都有一死，死后且有审判。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "The Penalty of Sin",
+          "text": "Just as people are destined to die once, and after that to face judgment.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-ransom-romans-5-8",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "基督代付赎价 · 罗马书5:8",
+        "zh": {
+          "book": "基督代付赎价",
+          "text": "惟有基督在我们还作罪人的时候为我们死，　神的爱就在此向我们显明了。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Christ Paid the Penalty",
+          "text": "But God demonstrates his own love for us in this: While we were still sinners, Christ died for us.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-ransom-1-peter-3-18",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "基督代付赎价 · 彼得前书3:18",
+        "zh": {
+          "book": "基督代付赎价",
+          "text": "因基督也曾一次为罪受苦，就是义的代替不义的，为要引我们到　神面前。按着肉体说，他被治死；按着灵性说，他复活了。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Christ Paid the Penalty",
+          "text": "For Christ also suffered once for sins, the righteous for the unrighteous, to bring you to God. He was put to death in the body but made alive in the Spirit.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-not-works-ephesians-2-8-9",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "救恩不在行为 · 以弗所书2:8-9",
+        "zh": {
+          "book": "救恩不在行为",
+          "text": "你们得救是本乎恩，也因着信；这并不是出于自己，乃是　神所赐的； 也不是出于行为，免得有人自夸。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Salvation Is Not by Works",
+          "text": "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God— not by works, so that no one can boast.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-not-works-titus-3-5",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "救恩不在行为 · 提多书3:5",
+        "zh": {
+          "book": "救恩不在行为",
+          "text": "他便救了我们；并不是因我们自己所行的义，乃是照他的怜悯，藉着重生的洗和圣灵的更新。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Salvation Is Not by Works",
+          "text": "he saved us, not because of righteous things we had done, but because of his mercy. He saved us through the washing of rebirth and renewal by the Holy Spirit.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-receive-john-1-12",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "必须接受基督 · 约翰福音1:12",
+        "zh": {
+          "book": "必须接受基督",
+          "text": "凡接待他的，就是信他名的人，他就赐他们权柄作　神的儿女。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "We Must Receive Christ",
+          "text": "Yet to all who did receive him, to those who believed in his name, he gave the right to become children of God.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-receive-revelation-3-20",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "必须接受基督 · 启示录3:20",
+        "zh": {
+          "book": "必须接受基督",
+          "text": "看哪，我站在门外叩门，若有听见我声音就开门的，我要进到他那里去，我与他，他与我一同坐席。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "We Must Receive Christ",
+          "text": "Here I am! I stand at the door and knock. If anyone hears my voice and opens the door, I will come in and eat with that person, and they with me.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-assurance-1-john-5-13",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "得救的确据 · 约翰一书5:13",
+        "zh": {
+          "book": "得救的确据",
+          "text": "我将这些话写给你们信奉　神儿子之名的人，要叫你们知道自己有永生。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Assurance of Salvation",
+          "text": "I write these things to you who believe in the name of the Son of God so that you may know that you have eternal life.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "b-assurance-john-5-24",
+        "section": "B",
+        "language": "zh",
+        "referenceOverride": "得救的确据 · 约翰福音5:24",
+        "zh": {
+          "book": "得救的确据",
+          "text": "我实实在在地告诉你们，那听我话、又信差我来者的，就有永生；不至于定罪，是已经出死入生了。",
+          "theme": "B"
+        },
+        "en": {
+          "book": "Assurance of Salvation",
+          "text": "Very truly I tell you, whoever hears my word and believes him who sent me has eternal life and will not be judged but has crossed over from death to life.",
+          "theme": "B"
+        }
+      },
+      {
+        "id": "c-spirit-1-corinthians-3-16",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的灵 · 哥林多前书3:16",
+        "zh": {
+          "book": "他的灵",
+          "text": "岂不知你们是　神的殿，　神的灵住在你们里头吗？",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Spirit",
+          "text": "Don't you know that you yourselves are God's temple and that God's Spirit dwells in your midst?",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-spirit-1-corinthians-2-12",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的灵 · 哥林多前书2:12",
+        "zh": {
+          "book": "他的灵",
+          "text": "我们所领受的，并不是世上的灵，乃是从　神来的灵，叫我们能知道　神开恩赐给我们的事。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Spirit",
+          "text": "What we have received is not the spirit of the world, but the Spirit who is from God, so that we may understand what God has freely given us.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-strength-isaiah-41-10",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的力量 · 以赛亚书41:10",
+        "zh": {
+          "book": "他的力量",
+          "text": "你不要害怕，因为我与你同在；不要惊惶，因为我是你的　神。我必坚固你，我必帮助你；我必用我公义的右手扶持你。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Strength",
+          "text": "So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you; I will uphold you with my righteous right hand.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-strength-philippians-4-13",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的力量 · 腓立比书4:13",
+        "zh": {
+          "book": "他的力量",
+          "text": "我靠着那加给我力量的，凡事都能作。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Strength",
+          "text": "I can do all this through him who gives me strength.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-faithfulness-lamentations-3-22-23",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的信实 · 耶利米哀歌3:22,23",
+        "zh": {
+          "book": "他的信实",
+          "text": "我们不至消灭，是出于耶和华诸般的慈爱；是因他的怜悯不至断绝。每早晨，这都是新的；你的诚实极其广大！",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Faithfulness",
+          "text": "Because of the Lord's great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-faithfulness-numbers-23-19",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的信实 · 民数记23:19",
+        "zh": {
+          "book": "他的信实",
+          "text": "神非人，必不致说谎，也非人子，必不致后悔。他说话岂不照着行呢？他发言岂不要成就呢？",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Faithfulness",
+          "text": "God is not human, that he should lie, not a human being, that he should change his mind. Does he speak and then not act? Does he promise and not fulfill?",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-peace-isaiah-26-3",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的平安 · 以赛亚书26:3",
+        "zh": {
+          "book": "他的平安",
+          "text": "坚心倚赖你的，你必保守他十分平安，因为他倚靠你。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Peace",
+          "text": "You will keep in perfect peace those whose minds are steadfast, because they trust in you.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-peace-1-peter-5-7",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的平安 · 彼得前书5:7",
+        "zh": {
+          "book": "他的平安",
+          "text": "你们要将一切的忧虑卸给　神，因为他顾念你们。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Peace",
+          "text": "Cast all your anxiety on him because he cares for you.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-provision-romans-8-32",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的赐给 · 罗马书8:32",
+        "zh": {
+          "book": "他的赐给",
+          "text": "神既不爱惜自己的儿子，为我们众人舍了，岂不也把万物和他一同白白地赐给我们吗？",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Provision",
+          "text": "He who did not spare his own Son, but gave him up for us all—how will he not also, along with him, graciously give us all things?",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-provision-philippians-4-19",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他的赐给 · 腓立比书4:19",
+        "zh": {
+          "book": "他的赐给",
+          "text": "我的　神必照他荣耀的丰富，在基督耶稣里，使你们一切所需用的都充足。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Provision",
+          "text": "And my God will meet all your needs according to the riches of his glory in Christ Jesus.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-temptation-psalm-119-9-11",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他在试探中的帮助 · 诗篇119:9,11",
+        "zh": {
+          "book": "他在试探中的帮助",
+          "text": "少年人用什么洁净他的行为呢？是要遵行你的话！...我将你的话藏在心里，免得我得罪你。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Help in Temptation",
+          "text": "How can a young person stay on the path of purity? By living according to your word. ... I have hidden your word in my heart that I might not sin against you.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "c-temptation-hebrews-2-18",
+        "section": "C",
+        "language": "zh",
+        "referenceOverride": "他在试探中的帮助 · 希伯来书2:18",
+        "zh": {
+          "book": "他在试探中的帮助",
+          "text": "他自己既然被试探而受苦，就能搭救被试探的人。",
+          "theme": "C"
+        },
+        "en": {
+          "book": "His Help in Temptation",
+          "text": "Because he himself suffered when he was tempted, he is able to help those who are being tempted.",
+          "theme": "C"
+        }
+      },
+      {
+        "id": "d-christ-as-lord-of-all-matthew-6-33",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "以基督为首 · 马太福音6:33",
+        "zh": {
+          "book": "以基督为首",
+          "text": "你们要先求他的国和他的义，这些东西都要加给你们了。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Christ as Lord of All",
+          "text": "But seek first his kingdom and his righteousness, and all these things will be given to you as well.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-christ-as-lord-of-all-luke-9-23",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "以基督为首 · 路加福音9:23",
+        "zh": {
+          "book": "以基督为首",
+          "text": "耶稣又对众人说:\"若有人要跟从我，就当舍己，天天背起他的十字架来跟从我。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Christ as Lord of All",
+          "text": "Then he said to them all: \"Whoever wants to be my disciple must deny themselves and take up their cross daily and follow me.\"",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-separation-from-the-world-1-john-2-15-16",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "从世界分别出来 · 约翰一书2:15,16",
+        "zh": {
+          "book": "从世界分别出来",
+          "text": "不要爱世界和世界上的事。人若爱世界，爱父的心就不在他里面了。因为凡世界上的事，就像肉体的情欲，眼目的情欲，并今生的骄傲，都不是从父来的，乃是从世界来的。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Separation from the World",
+          "text": "Do not love the world or anything in the world. If anyone loves the world, love for the Father is not in them. For everything in the world—the lust of the flesh, the lust of the eyes, and the pride of life—comes not from the Father but from the world.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-separation-from-the-world-romans-12-2",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "从世界分别出来 · 罗马书12:2",
+        "zh": {
+          "book": "从世界分别出来",
+          "text": "不要效法这个世界，只要心意更新而变化，叫你们察验何为神的善良、纯全、可喜悦的旨意。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Separation from the World",
+          "text": "Do not conform to the pattern of this world, but be transformed by the renewing of your mind. Then you will be able to test and approve what God's will is—his good, pleasing and perfect will.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-steadfastness-1-corinthians-15-58",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "坚定不移 · 哥林多前书15:58",
+        "zh": {
+          "book": "坚定不移",
+          "text": "所以，我亲爱的弟兄们，你们务要坚固，不可摇动，常常竭力多作主工，因为知道你们的劳苦，在主里面不是徒然的。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Steadfastness",
+          "text": "Therefore, my dear brothers and sisters, stand firm. Let nothing move you. Always give yourselves fully to the work of the Lord, because you know that your labor in the Lord is not in vain.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-steadfastness-hebrews-12-3",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "坚定不移 · 希伯来书12:3",
+        "zh": {
+          "book": "坚定不移",
+          "text": "那忍受罪人这样顶撞的，你们要思想，免得疲倦灰心。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Steadfastness",
+          "text": "Consider him who endured such opposition from sinners, so that you will not grow weary and lose heart.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-serving-others-mark-10-45",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "要服侍他人 · 马可福音10:45",
+        "zh": {
+          "book": "要服侍他人",
+          "text": "因为人子来，并不是要受人的服侍，乃是要服侍人，并且要舍命，作多人的赎价。\"",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Serving Others",
+          "text": "For even the Son of Man did not come to be served, but to serve, and to give his life as a ransom for many.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-serving-others-2-corinthians-4-5",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "要服侍他人 · 哥林多后书4:5",
+        "zh": {
+          "book": "要服侍他人",
+          "text": "我们原不是传自己，乃是传基督耶稣为主，并且自己因耶稣作你们的仆人。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Serving Others",
+          "text": "For what we preach is not ourselves, but Jesus Christ as Lord, and ourselves as your servants for Jesus' sake.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-giving-generously-proverbs-3-9-10",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "慷慨的捐助 · 箴言3:9,10",
+        "zh": {
+          "book": "慷慨的捐助",
+          "text": "你要以财物和一切初熟的土产尊荣耶和华。这样，你的仓房必充满有余，你的酒榨有新酒盈溢。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Giving Generously",
+          "text": "Honor the Lord with your wealth, with the firstfruits of all your crops; then your barns will be filled to overflowing, and your vats will brim over with new wine.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-giving-generously-2-corinthians-9-6-7",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "慷慨的捐助 · 哥林多后书9:6,7",
+        "zh": {
+          "book": "慷慨的捐助",
+          "text": "少种的少收，多种的多收，这话是真的。 各人要随本心所酌定的，不要作难，不要勉强，因为捐得乐意的人是神所喜爱的。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "Giving Generously",
+          "text": "Whoever sows sparingly will also reap sparingly, and whoever sows generously will also reap generously. Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-the-gospel-to-the-whole-world-acts-1-8",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "福音要传遍世界 · 使徒行传1:8",
+        "zh": {
+          "book": "福音要传遍世界",
+          "text": "但圣灵降临在你们身上，你们就必得着能力；并要在耶路撒冷、犹太全地和撒玛利亚，直到地极，作我的见证。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "The Gospel to the Whole World",
+          "text": "But you will receive power when the Holy Spirit comes on you; and you will be my witnesses in Jerusalem, and in all Judea and Samaria, and to the ends of the earth.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "d-the-gospel-to-the-whole-world-matthew-28-19-20",
+        "section": "D",
+        "language": "zh",
+        "referenceOverride": "福音要传遍世界 · 马太福音28:19,20",
+        "zh": {
+          "book": "福音要传遍世界",
+          "text": "所以，你们要去使万民作我的门徒，奉父、子、圣灵的名给他们施洗。凡我所吩咐你们的，都教训他们遵守，我就常与你们同在，直到世界的末了。",
+          "theme": "D"
+        },
+        "en": {
+          "book": "The Gospel to the Whole World",
+          "text": "Therefore go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, and teaching them to obey everything I have commanded you. And surely I am with you always, to the very end of the age.",
+          "theme": "D"
+        }
+      },
+      {
+        "id": "e-love-john-13-34-35",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "爱心 · 约翰福音13:34,35",
+        "zh": {
+          "book": "爱心",
+          "text": "我赐给你们一条新命令，乃是叫你们彼此相爱；我怎样爱你们，你们也要怎样相爱。你们若有彼此相爱的心，众人因此就认出你们是我的门徒了。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Love",
+          "text": "A new command I give you: Love one another. As I have loved you, so you must love one another. By this everyone will know that you are my disciples, if you love one another.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-love-1-john-3-18",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "爱心 · 约翰一书3:18",
+        "zh": {
+          "book": "爱心",
+          "text": "小子们哪，我们相爱，不要只在言语和舌头上，总要在行为和诚实上。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Love",
+          "text": "Dear children, let us not love with words or speech but with actions and in truth.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-humility-philippians-2-3-4",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "谦卑 · 腓立比书2:3,4",
+        "zh": {
+          "book": "谦卑",
+          "text": "凡事不可结党，不可贪图虚浮的荣耀，只要存心谦卑，各人看别人比自己强。各人不要单顾自己的事，也要顾别人的事。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Humility",
+          "text": "Do nothing out of selfish ambition or vain conceit. Rather, in humility value others above yourselves, not looking to your own interests but each of you to the interests of the others.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-humility-1-peter-5-5-6",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "谦卑 · 彼得前书5:5,6",
+        "zh": {
+          "book": "谦卑",
+          "text": "你们年幼的，也要顺服年长的。就是你们众人，也都要以谦卑束腰，彼此顺服，因为神阻挡骄傲的人，赐恩给谦卑的人。所以你们要自卑，服在神大能的手下，到了时候，他必叫你们升高。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Humility",
+          "text": "In the same way, you who are younger, submit yourselves to your elders. All of you, clothe yourselves with humility toward one another, because, \"God opposes the proud but shows favor to the humble.\" Humble yourselves, therefore, under God's mighty hand, that he may lift you up in due time.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-purity-ephesians-5-3",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "圣洁 · 以弗所书5:3",
+        "zh": {
+          "book": "圣洁",
+          "text": "至于淫乱并一切污秽，或是贪婪，在你们中间连提都不可，方合圣徒的体统。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Purity",
+          "text": "But among you there must not be even a hint of sexual immorality, or of any kind of impurity, or of greed, because these are improper for God's holy people.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-purity-1-peter-2-11",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "圣洁 · 彼得前书2:11",
+        "zh": {
+          "book": "圣洁",
+          "text": "亲爱的弟兄啊，你们是客旅，是寄居的。我劝你们要禁戒肉体的私欲，这私欲是与灵魂争战的。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Purity",
+          "text": "Dear friends, I urge you, as foreigners and exiles, to abstain from sinful desires, which wage war against your soul.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-honesty-leviticus-19-11",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "诚实 · 利未记19:11",
+        "zh": {
+          "book": "诚实",
+          "text": "你们不可偷盗，不可欺骗，也不可彼此说谎。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Honesty",
+          "text": "Do not steal. Do not lie. Do not deceive one another.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-honesty-acts-24-16",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "诚实 · 使徒行传24:16",
+        "zh": {
+          "book": "诚实",
+          "text": "我因此自己勉励，对神对人，常存无亏的良心。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Honesty",
+          "text": "So I strive always to keep my conscience clear before God and man.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-faith-hebrews-11-6",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "信心 · 希伯来书11:6",
+        "zh": {
+          "book": "信心",
+          "text": "人非有信，就不能得神的喜悦；因为到神面前来的人，必须信有神，且信他赏赐那寻求他的人。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Faith",
+          "text": "And without faith it is impossible to please God, because anyone who comes to him must believe that he exists and that he rewards those who earnestly seek him.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-faith-romans-4-20-21",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "信心 · 罗马书4:20,21",
+        "zh": {
+          "book": "信心",
+          "text": "并且仰望神的应许，总没有因不信，心里起疑惑，反倒因信，心里得坚固，将荣耀归给神。且满心相信，神所应许的必能作成。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Faith",
+          "text": "Yet he did not waver through unbelief regarding the promise of God, but was strengthened in his faith and gave glory to God, being fully persuaded that God had power to do what he had promised.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-good-works-galatians-6-9-10",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "善行 · 加拉太书6:9,10",
+        "zh": {
+          "book": "善行",
+          "text": "我们行善，不可丧志，若不灰心，到了时候就要收成。 所以，有了机会，就当向众人行善，向信徒一家的人更当这样。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Good Works",
+          "text": "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up. Therefore, as we have opportunity, let us do good to all people, especially to those who belong to the family of believers.",
+          "theme": "E"
+        }
+      },
+      {
+        "id": "e-good-works-matthew-5-16",
+        "section": "E",
+        "language": "zh",
+        "referenceOverride": "善行 · 马太福音5:16",
+        "zh": {
+          "book": "善行",
+          "text": "你们的光也当这样照在人前，叫他们看见你们的好行为，便将荣耀归给你们在天上的父。",
+          "theme": "E"
+        },
+        "en": {
+          "book": "Good Works",
+          "text": "In the same way, let your light shine before others, that they may see your good deeds and glorify your Father in heaven.",
+          "theme": "E"
+        }
+      }
+    ];
+
+    const copy = {
+      zh: {
+        switchLang: "English",
+        nav: { today: "背诵", library: "经文库", favorites: "收藏", listen: "听经", progress: "进度" },
+        tabs: {
+          today: ["主题背诵", "背经"],
+          library: ["按主题浏览", "经文库"],
+          favorites: ["重点经文", "收藏"],
+          listen: ["循环朗读", "听经文"],
+          progress: ["复习记录", "进度"]
+        },
+        stats: { verses: "经文", total: "经文总数", memorized: "已背过", favorites: "收藏" },
+        todayNote: "今天先练 1 到 3 节，背熟后再继续，不追求复杂打卡。",
+        todayRecommended: "今日推荐",
+        pairHeroTitle: "只看标题，把经文背出来",
+        pairHeroNote: "五个确据单独背诵；A–E 按主题成对背诵。章节和经文正文都属于答案。",
+        memoryMotto: "让神的话住在心里",
+        masteredTopics: "已背熟主题",
+        topicCount: "个主题",
+        libraryHeroTitle: "建立你的经文宝库",
+        libraryHeroNote: "按系列浏览、搜索内容，也可以加入自己正在背诵的经文。",
+        favoritesHeroTitle: "把重要的话放在手边",
+        favoritesHeroNote: "这里收藏你想反复思想、优先背熟的经文。",
+        listenHeroTitle: "让经文在耳边扎根",
+        listenHeroNote: "选择经文并循环朗读，在通勤、家务或安静时反复聆听。",
+        progressHeroTitle: "看见每一次坚持",
+        progressHeroNote: "复习记录会留在这里，帮助你知道已经走了多远。",
+        libraryTools: "浏览与搜索",
+        savedCollection: "收藏的经文",
+        listeningCollection: "选择朗读内容",
+        progressOverview: "背诵概览",
+        chooseTopic: "选择背诵主题",
+        assuranceSection: "五个确据",
+        singleVerse: "一处经文",
+        pairedVerses: "两处经文",
+        pairNew: "未开始",
+        pairPracticing: "练习中",
+        pairMastered: "已背熟",
+        learnPair: "先学习这一对",
+        learnNote: "先把主题、章节和两处经文连在一起熟读。",
+        startRecall: "开始无提示背诵",
+        recallOnlyTopic: "唯一提示",
+        recallInstruction: "现在不要看答案。请背出章节和完整经文，完成后再进入核对。",
+        recallSingleInstruction: "现在不要看答案。请背出这处经文的章节和完整正文，完成后再进入核对。",
+        beginCheck: "我已背完，开始核对",
+        checkIntro: "先填写你背出的章节与经文。提交前不会显示正确答案。",
+        pairOrderNote: "两处经文的填写顺序可以互换，系统会自动匹配。",
+        chooseBook: "选择书卷",
+        chapterPlaceholder: "章",
+        versePlaceholder: "节",
+        verseAnswerPlaceholder: "默写完整经文正文",
+        submitAudit: "提交并核对",
+        stepRecall: "背诵",
+        stepWrite: "填写",
+        stepReview: "核对",
+        auditComplete: "背诵完整",
+        auditPractice: "继续练习",
+        referenceCorrect: "章节正确",
+        referenceIncorrect: "章节需检查",
+        yourReference: "你的章节",
+        correctReference: "正确章节",
+        textCompleteness: "正文完整度",
+        auditRule: "章节全部正确，并且每一处正文去除标点和空格后均为 100%，才标记为已背熟。",
+        retryRecall: "重新背诵",
+        answerTitle: "完整答案",
+        rateRecall: "这一次背得怎么样？",
+        rateAgain: "还不会",
+        rateAlmost: "基本背出",
+        rateMastered: "完整背出",
+        backToTopics: "返回主题",
+        firstVerse: "第一处",
+        secondVerse: "第二处",
+        addSummary: "添加自己想背的经文",
+        customNote: "可以输入中文或英文经文，添加后会进入经文库，也能收藏和记录进度。",
+        storageWarning: "提醒：自定义经文依赖当前浏览器缓存保存。换设备、换浏览器、清理缓存或卸载 PWA 都可能导致丢失。若想长期保存，请在添加经文后点击导出经文。",
+        exportData: "导出经文",
+        importData: "导入经文",
+        importHelp: "导入会合并自定义经文、收藏、进度和朗读设置，不会删除内置经文。",
+        importSuccess: "导入完成。",
+        importError: "导入失败，请确认选择的是本应用导出的 JSON 文件。",
+        importConfirm: "导入会合并备份文件中的自定义经文、收藏、进度和设置。继续导入吗？",
+        language: "语言",
+        chinese: "中文",
+        english: "英文",
+        reference: "出处，例如 约翰福音 3:16",
+        theme: "主题，例如 信心",
+        textPlaceholder: "输入想背诵的经文",
+        addButton: "添加到经文库",
+        builtinFilter: "筛选内置经文",
+        allBuiltIn: "全部经文",
+        customOnly: "自定义经文",
+        search: "搜索经文、主题或出处",
+        noResults: "没有找到相关经文",
+        noFavorites: "还没有收藏<br>在背诵页面点亮星标，经文会出现在这里。",
+        recentReview: "最近复习",
+        noReview: "完成一次背诵后，这里会显示复习记录。",
+        done: "已背过",
+        practicing: "还在练习",
+        reviewed: "复习",
+        times: "次",
+        custom: "自定义",
+        builtIn: "内置",
+        back: "返回",
+        memorizeMode: "背诵模式",
+        modes: { full: "全文", blanks: "遮挡", initials: "首字", selfTest: "自测" },
+        selfTestPlaceholder: "默写这节经文",
+        compareEmpty: "输入完成后点确认对照。",
+        compareMatch: "和原文一致。",
+        checkAnswer: "确认对照",
+        accuracy: "正确率",
+        matchedChars: "逐字匹配",
+        typedChars: "输入字数",
+        source: "原文",
+        hint: "显示更多提示",
+        markDone: "标记为已背过",
+        reset: "重置这节进度",
+        deleteCustom: "删除这节经文",
+        deleteConfirm: "确定要删除这节自定义经文吗？此操作不会影响内置经文。",
+        speak: "朗读经文",
+        stopSpeak: "停止朗读",
+        speechRate: "朗读语速",
+        rateSlow: "慢速",
+        rateNormal: "正常",
+        rateFast: "稍快",
+        speechUnavailable: "当前浏览器不支持朗读功能。",
+        listenNote: "勾选正在背的经文，播放后会按顺序朗读。适合做饭、打扫卫生时反复听。",
+        listenSelected: "已选择",
+        listenChoose: "选择要循环的经文",
+        selectToday: "选今日",
+        selectFavorites: "选收藏",
+        selectAll: "全选",
+        clearSelection: "清空",
+        loopMode: "循环次数",
+        loopOnce: "读一遍",
+        loopTwice: "循环两遍",
+        loopForever: "一直循环",
+        startLoop: "播放朗读",
+        stopLoop: "停止播放",
+        listeningNow: "正在朗读",
+        noListenSelection: "请先选择至少一节经文。",
+        nivCompare: "NIV 来源页面",
+        nivNote: "切换到 English 可直接查看 NIV 文本。",
+        reviewCount: "复习次数",
+        lastReviewed: "上次复习",
+        justNow: "刚刚",
+        todayTime: "今天 08:20",
+        yesterdayTime: "昨天 21:10",
+        addError: "请至少填写出处和经文正文。",
+        fontSizeLabel: { small: "小", medium: "中", large: "大", xlarge: "特大", xxlarge: "超大" }
+      },
+      en: {
+        switchLang: "中文",
+        nav: { today: "Practice", library: "Library", favorites: "Saved", listen: "Listen", progress: "Progress" },
+        tabs: {
+          today: ["Topic recall", "Memory"],
+          library: ["Browse by topic", "Library"],
+          favorites: ["Saved verses", "Saved"],
+          listen: ["Loop reading", "Listen"],
+          progress: ["Review history", "Progress"]
+        },
+        stats: { verses: "Verses", total: "Total", memorized: "Memorized", favorites: "Saved" },
+        todayNote: "Practice 1 to 3 verses today. Keep it steady and simple.",
+        todayRecommended: "Recommended today",
+        pairHeroTitle: "See the title, recall the verses",
+        pairHeroNote: "The Five Assurances are recalled individually; A–E topics contain two passages. References and full texts are part of the answer.",
+        memoryMotto: "Let the Word dwell within",
+        masteredTopics: "Topics mastered",
+        topicCount: " topics",
+        libraryHeroTitle: "Build your verse library",
+        libraryHeroNote: "Browse by series, search the text, or add a passage you are learning.",
+        favoritesHeroTitle: "Keep important words close",
+        favoritesHeroNote: "Save the passages you want to reflect on and memorize first.",
+        listenHeroTitle: "Let the Word take root by listening",
+        listenHeroNote: "Choose passages and loop them while commuting, doing chores, or resting.",
+        progressHeroTitle: "See every faithful step",
+        progressHeroNote: "Your review history stays here so you can see how far you have come.",
+        libraryTools: "Browse and search",
+        savedCollection: "Saved passages",
+        listeningCollection: "Choose passages",
+        progressOverview: "Memory overview",
+        chooseTopic: "Choose a topic",
+        assuranceSection: "Five Assurances",
+        singleVerse: "One passage",
+        pairedVerses: "Two passages",
+        pairNew: "Not started",
+        pairPracticing: "Practicing",
+        pairMastered: "Mastered",
+        learnPair: "Learn this pair",
+        learnNote: "Connect the topic, references, and both verse texts before recalling them.",
+        startRecall: "Start recall without hints",
+        recallOnlyTopic: "Only hint",
+        recallInstruction: "Do not view the answer yet. Recite both references and full verse texts, then continue to review.",
+        recallSingleInstruction: "Do not view the answer yet. Recite the reference and full verse text, then continue to review.",
+        beginCheck: "I have recited it — review",
+        checkIntro: "Enter the references and texts you recalled. Correct answers stay hidden until submission.",
+        pairOrderNote: "The two passages may be entered in either order; they are matched automatically.",
+        chooseBook: "Choose book",
+        chapterPlaceholder: "Ch.",
+        versePlaceholder: "Verse",
+        verseAnswerPlaceholder: "Write the complete verse text",
+        submitAudit: "Submit and review",
+        stepRecall: "Recall",
+        stepWrite: "Write",
+        stepReview: "Review",
+        auditComplete: "Complete recall",
+        auditPractice: "Keep practicing",
+        referenceCorrect: "Reference correct",
+        referenceIncorrect: "Check reference",
+        yourReference: "Your reference",
+        correctReference: "Correct reference",
+        textCompleteness: "Text completeness",
+        auditRule: "All references must be correct and every text must be 100% after punctuation and spaces are ignored.",
+        retryRecall: "Recall again",
+        answerTitle: "Full answer",
+        rateRecall: "How did this attempt go?",
+        rateAgain: "Not yet",
+        rateAlmost: "Almost",
+        rateMastered: "Complete",
+        backToTopics: "Back to topics",
+        firstVerse: "First",
+        secondVerse: "Second",
+        addSummary: "Add a verse to memorize",
+        customNote: "Add Chinese or English verses. They will appear in the library and can be saved or reviewed.",
+        storageWarning: "Reminder: custom verses are saved in this browser's local storage. Switching devices, changing browsers, clearing cache, or uninstalling the PWA may lose them. For long-term saving, export your verses after adding them.",
+        exportData: "Export verses",
+        importData: "Import verses",
+        importHelp: "Import merges custom verses, saved items, progress, and reading settings. Built-in verses are never deleted.",
+        importSuccess: "Import complete.",
+        importError: "Import failed. Please choose a JSON file exported by this app.",
+        importConfirm: "Import will merge custom verses, saved items, progress, and settings from the backup file. Continue?",
+        language: "Language",
+        chinese: "Chinese",
+        english: "English",
+        reference: "Reference, e.g. John 3:16",
+        theme: "Topic, e.g. Faith",
+        textPlaceholder: "Enter the verse text",
+        addButton: "Add to library",
+        builtinFilter: "Filter built-in verses",
+        allBuiltIn: "All verses",
+        customOnly: "Custom verses",
+        search: "Search verse, topic, or reference",
+        noResults: "No verses found",
+        noFavorites: "No saved verses yet<br>Tap the star on a verse to save it here.",
+        recentReview: "Recent review",
+        noReview: "After one review, your history will appear here.",
+        done: "Memorized",
+        practicing: "Practicing",
+        reviewed: "Reviewed",
+        times: "times",
+        custom: "Custom",
+        builtIn: "Built in",
+        back: "Back",
+        memorizeMode: "Practice mode",
+        modes: { full: "Full", blanks: "Blanks", initials: "Initials", selfTest: "Self test" },
+        selfTestPlaceholder: "Write the verse from memory",
+        compareEmpty: "Finish typing, then check your answer.",
+        compareMatch: "Matches the source.",
+        checkAnswer: "Check answer",
+        accuracy: "Accuracy",
+        matchedChars: "Matched characters",
+        typedChars: "Typed characters",
+        source: "Source",
+        hint: "Show more hints",
+        markDone: "Mark as memorized",
+        reset: "Reset this verse",
+        deleteCustom: "Delete this verse",
+        deleteConfirm: "Delete this custom verse? Built-in verses will not be affected.",
+        speak: "Read verse",
+        stopSpeak: "Stop reading",
+        speechRate: "Reading speed",
+        rateSlow: "Slow",
+        rateNormal: "Normal",
+        rateFast: "Faster",
+        speechUnavailable: "Speech is not supported in this browser.",
+        listenNote: "Select the verses you are memorizing, then play them in order. Useful while cooking or cleaning.",
+        listenSelected: "Selected",
+        listenChoose: "Choose verses to loop",
+        selectToday: "Today",
+        selectFavorites: "Saved",
+        selectAll: "All",
+        clearSelection: "Clear",
+        loopMode: "Loop",
+        loopOnce: "Read once",
+        loopTwice: "Loop twice",
+        loopForever: "Keep looping",
+        startLoop: "Play",
+        stopLoop: "Stop",
+        listeningNow: "Reading",
+        noListenSelection: "Select at least one verse first.",
+        nivCompare: "NIV source page",
+        nivNote: "Switch to English to view NIV text directly.",
+        reviewCount: "Review count",
+        lastReviewed: "Last reviewed",
+        justNow: "Just now",
+        todayTime: "Today 08:20",
+        yesterdayTime: "Yesterday 21:10",
+        addError: "Please enter at least a reference and verse text.",
+        fontSizeLabel: { small: "S", medium: "M", large: "L", xlarge: "XL", xxlarge: "XXL" }
+      }
+    };
+
+    const fontSteps = ["small", "medium", "large", "xlarge", "xxlarge"];
+    const fontSizes = {
+      small: { list: 15, reader: 18 },
+      medium: { list: 16, reader: 20 },
+      large: { list: 18, reader: 24 },
+      xlarge: { list: 20, reader: 30 },
+      xxlarge: { list: 22, reader: 36 }
+    };
+    const interfaceScales = { small: .90, medium: 1, large: 1.12, xlarge: 1.24, xxlarge: 1.36 };
+
+    const nivQueriesByID = {
+      "assurance-salvation": "1 John 5:11-12",
+      "assurance-prayer": "John 16:24",
+      "assurance-forgiveness": "1 John 1:9",
+      "assurance-guidance": "Proverbs 3:5-6",
+      "assurance-victory": "1 Corinthians 10:13",
+      "a-christ-center-galatians-2-20": "Galatians 2:20",
+      "a-christ-center-2-corinthians-5-17": "2 Corinthians 5:17",
+      "a-obey-romans-12-1": "Romans 12:1",
+      "a-obey-john-14-21": "John 14:21",
+      "a-word-2-timothy-3-16": "2 Timothy 3:16",
+      "a-word-joshua-1-8": "Joshua 1:8",
+      "a-prayer-john-15-7": "John 15:7",
+      "a-prayer-philippians-4-6-7": "Philippians 4:6-7",
+      "a-fellowship-matthew-18-20": "Matthew 18:20",
+      "a-fellowship-hebrews-10-24-25": "Hebrews 10:24-25",
+      "a-witness-matthew-4-19": "Matthew 4:19",
+      "a-witness-romans-1-16": "Romans 1:16",
+      "b-sin-romans-3-23": "Romans 3:23",
+      "b-sin-isaiah-53-6": "Isaiah 53:6",
+      "b-penalty-romans-6-23": "Romans 6:23",
+      "b-penalty-hebrews-9-27": "Hebrews 9:27",
+      "b-ransom-romans-5-8": "Romans 5:8",
+      "b-ransom-1-peter-3-18": "1 Peter 3:18",
+      "b-not-works-ephesians-2-8-9": "Ephesians 2:8-9",
+      "b-not-works-titus-3-5": "Titus 3:5",
+      "b-receive-john-1-12": "John 1:12",
+      "b-receive-revelation-3-20": "Revelation 3:20",
+      "b-assurance-1-john-5-13": "1 John 5:13",
+      "b-assurance-john-5-24": "John 5:24",
+      "c-spirit-1-corinthians-3-16": "1 Corinthians 3:16",
+      "c-spirit-1-corinthians-2-12": "1 Corinthians 2:12",
+      "c-strength-isaiah-41-10": "Isaiah 41:10",
+      "c-strength-philippians-4-13": "Philippians 4:13",
+      "c-faithfulness-lamentations-3-22-23": "Lamentations 3:22-23",
+      "c-faithfulness-numbers-23-19": "Numbers 23:19",
+      "c-peace-isaiah-26-3": "Isaiah 26:3",
+      "c-peace-1-peter-5-7": "1 Peter 5:7",
+      "c-provision-romans-8-32": "Romans 8:32",
+      "c-provision-philippians-4-19": "Philippians 4:19",
+      "c-temptation-psalm-119-9-11": "Psalm 119:9, 11",
+      "c-temptation-hebrews-2-18": "Hebrews 2:18",
+      "d-christ-as-lord-of-all-matthew-6-33": "Matthew 6:33",
+      "d-christ-as-lord-of-all-luke-9-23": "Luke 9:23",
+      "d-separation-from-the-world-1-john-2-15-16": "1 John 2:15-16",
+      "d-separation-from-the-world-romans-12-2": "Romans 12:2",
+      "d-steadfastness-1-corinthians-15-58": "1 Corinthians 15:58",
+      "d-steadfastness-hebrews-12-3": "Hebrews 12:3",
+      "d-serving-others-mark-10-45": "Mark 10:45",
+      "d-serving-others-2-corinthians-4-5": "2 Corinthians 4:5",
+      "d-giving-generously-proverbs-3-9-10": "Proverbs 3:9-10",
+      "d-giving-generously-2-corinthians-9-6-7": "2 Corinthians 9:6-7",
+      "d-the-gospel-to-the-whole-world-acts-1-8": "Acts 1:8",
+      "d-the-gospel-to-the-whole-world-matthew-28-19-20": "Matthew 28:19-20",
+      "e-love-john-13-34-35": "John 13:34-35",
+      "e-love-1-john-3-18": "1 John 3:18",
+      "e-humility-philippians-2-3-4": "Philippians 2:3-4",
+      "e-humility-1-peter-5-5-6": "1 Peter 5:5-6",
+      "e-purity-ephesians-5-3": "Ephesians 5:3",
+      "e-purity-1-peter-2-11": "1 Peter 2:11",
+      "e-honesty-leviticus-19-11": "Leviticus 19:11",
+      "e-honesty-acts-24-16": "Acts 24:16",
+      "e-faith-hebrews-11-6": "Hebrews 11:6",
+      "e-faith-romans-4-20-21": "Romans 4:20-21",
+      "e-good-works-galatians-6-9-10": "Galatians 6:9-10",
+      "e-good-works-matthew-5-16": "Matthew 5:16"
+    };
+
+    function storedFontSize() {
+      try {
+        const saved = readSavedState().fontSize || localStorage.getItem("scripture.prototype.fontSize");
+        return fontSteps.includes(saved) ? saved : "medium";
+      } catch {
+        return "medium";
+      }
+    }
+
+    const storageKey = "scripture.memory.pwa.v1";
+
+    function readSavedState() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveState() {
+      const payload = {
+        lang: state.lang,
+        fontSize: state.fontSize,
+        speechRate: state.speechRate,
+        loopMode: state.loopMode,
+        loopVerseIDs: state.loopVerseIDs,
+        customVerses: state.customVerses,
+        favorites: Array.from(state.favorites),
+        progress: state.progress,
+        pairProgress: state.pairProgress
+      };
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(payload));
+      } catch {
+        // Local storage can fail in private browsing or full-storage states.
+      }
+    }
+
+    function backupPayload() {
+      return {
+        version: 1,
+        app: "scripture-memory-pwa",
+        exportedAt: new Date().toISOString(),
+        data: {
+          customVerses: state.customVerses,
+          favorites: Array.from(state.favorites),
+          progress: state.progress,
+          settings: {
+            lang: state.lang,
+            fontSize: state.fontSize,
+            speechRate: state.speechRate,
+            loopMode: state.loopMode,
+            loopVerseIDs: state.loopVerseIDs,
+            pairProgress: state.pairProgress
+          }
+        }
+      };
+    }
+
+    function exportUserData() {
+      const date = new Date().toISOString().slice(0, 10);
+      const blob = new Blob([JSON.stringify(backupPayload(), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `scripture-memory-backup-${date}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function isPlainObject(value) {
+      return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+    }
+
+    function validCustomVerse(verse) {
+      if (!isPlainObject(verse)) return false;
+      const language = verse.language === "en" ? "en" : "zh";
+      const content = verse[language] || verse.zh || verse.en;
+      return isPlainObject(content) && typeof content.text === "string" && content.text.trim() && (typeof content.book === "string" || typeof verse.referenceOverride === "string");
+    }
+
+    function mergeImportedData(payload) {
+      const data = isPlainObject(payload && payload.data) ? payload.data : payload;
+      if (!isPlainObject(data)) throw new Error("Invalid backup");
+
+      const existingCustomIDs = new Set(state.customVerses.map((verse) => verse.id));
+      const importedCustomVerses = Array.isArray(data.customVerses) ? data.customVerses.filter(validCustomVerse) : [];
+      let importedCustomCount = 0;
+
+      importedCustomVerses.forEach((verse) => {
+        const id = typeof verse.id === "string" && verse.id ? verse.id : `custom-${Date.now()}-${importedCustomCount}`;
+        if (existingCustomIDs.has(id)) return;
+        state.customVerses.push({
+          ...verse,
+          id,
+          custom: true,
+          language: verse.language === "en" ? "en" : "zh"
+        });
+        existingCustomIDs.add(id);
+        importedCustomCount += 1;
+      });
+
+      const validIDs = new Set(allVerses().map((verse) => verse.id));
+      if (Array.isArray(data.favorites)) {
+        data.favorites.forEach((id) => {
+          if (typeof id === "string" && validIDs.has(id)) state.favorites.add(id);
+        });
+      }
+
+      if (isPlainObject(data.progress)) {
+        Object.entries(data.progress).forEach(([id, progress]) => {
+          if (validIDs.has(id) && isPlainObject(progress)) {
+            state.progress[id] = { ...state.progress[id], ...progress };
+          }
+        });
+      }
+
+      const settings = isPlainObject(data.settings) ? data.settings : data;
+      if (settings.lang === "zh" || settings.lang === "en") state.lang = settings.lang;
+      if (fontSteps.includes(settings.fontSize)) state.fontSize = settings.fontSize;
+      if (["slow", "normal", "fast"].includes(settings.speechRate)) state.speechRate = settings.speechRate;
+      if (["once", "twice", "forever"].includes(settings.loopMode)) state.loopMode = settings.loopMode;
+      if (Array.isArray(settings.loopVerseIDs)) {
+        state.loopVerseIDs = settings.loopVerseIDs.filter((id) => typeof id === "string" && validIDs.has(id));
+      }
+      if (isPlainObject(data.pairProgress)) state.pairProgress = { ...state.pairProgress, ...data.pairProgress };
+      if (isPlainObject(settings.pairProgress)) state.pairProgress = { ...state.pairProgress, ...settings.pairProgress };
+
+      return importedCustomCount;
+    }
+
+    async function importUserData(file) {
+      if (!file) return;
+      try {
+        if (!confirm(t("importConfirm"))) return;
+        const payload = JSON.parse(await file.text());
+        const importedCustomCount = mergeImportedData(payload);
+        saveState();
+        alert(`${t("importSuccess")} ${t("custom")}：${importedCustomCount}`);
+        render();
+      } catch {
+        alert(t("importError"));
+      }
+    }
+
+    const savedState = readSavedState();
+
+    const state = {
+      lang: savedState.lang === "en" ? "en" : "zh",
+      tab: "today",
+      detailID: null,
+      pairID: null,
+      pairStage: "recall",
+      pairAnswers: [],
+      memorizeSection: "五个确据",
+      mode: "full",
+      fontSize: storedFontSize(),
+      speechRate: ["slow", "normal", "fast"].includes(savedState.speechRate) ? savedState.speechRate : "normal",
+      loopMode: ["once", "twice", "forever"].includes(savedState.loopMode) ? savedState.loopMode : "forever",
+      loopVerseIDs: Array.isArray(savedState.loopVerseIDs) ? savedState.loopVerseIDs : ["assurance-salvation"],
+      hint: 0,
+      search: "",
+      answer: "",
+      selfTestChecked: false,
+      libraryFilter: "all",
+      customVerses: Array.isArray(savedState.customVerses) ? savedState.customVerses : [],
+      favorites: new Set(Array.isArray(savedState.favorites) ? savedState.favorites : ["assurance-salvation"]),
+      pairProgress: isPlainObject(savedState.pairProgress) ? savedState.pairProgress : {},
+      progress: savedState.progress || {
+        "assurance-salvation": { reviewCount: 2, isMemorized: true, lastReviewedAtKey: "todayTime" },
+        "assurance-prayer": { reviewCount: 1, isMemorized: false, lastReviewedAtKey: "yesterdayTime" }
+      }
+    };
+
+    const app = document.querySelector("#app");
+    const pageTitle = document.querySelector("#pageTitle");
+    const eyebrow = document.querySelector("#eyebrow");
+    const langSwitch = document.querySelector("#langSwitch");
+    const fontDown = document.querySelector("#fontDown");
+    const fontUp = document.querySelector("#fontUp");
+    const fontSizeLabel = document.querySelector("#fontSizeLabel");
+    const tabButtons = document.querySelectorAll(".tabbar button");
+    const loopPlayback = {
+      active: false,
+      session: 0,
+      ids: [],
+      index: 0,
+      loopCount: 0,
+      currentID: null
+    };
+
+    function t(key) {
+      return key.split(".").reduce((value, part) => value && value[part], copy[state.lang]) || key;
+    }
+
+    function allVerses() {
+      return [...builtInVerses, ...state.customVerses];
+    }
+
+    function contentOf(verse) {
+      return verse[state.lang] || verse[verse.language] || verse.zh || verse.en;
+    }
+
+    function reference(verse) {
+      const content = contentOf(verse);
+      if (state.lang === "en" && verse.en && nivQueriesByID[verse.id]) {
+        return `${content.book} · ${nivQueriesByID[verse.id]}`;
+      }
+      if (verse.referenceOverride) return verse.referenceOverride;
+      return `${content.book} ${verse.chapter}:${verse.verse}`;
+    }
+
+    function progressFor(verse) {
+      return state.progress[verse.id] || { reviewCount: 0, isMemorized: false, lastReviewedAt: null };
+    }
+
+    function currentVerseIDs() {
+      return new Set(allVerses().map((verse) => verse.id));
+    }
+
+    function todayVerses() {
+      const verses = allVerses();
+      const unfinished = verses.filter((verse) => !progressFor(verse).isMemorized);
+      return (unfinished.length ? unfinished : verses).slice(0, 3);
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function isChineseChar(char) {
+      return /[\u4e00-\u9fff]/.test(char);
+    }
+
+    function isMemoryChar(char, verse) {
+      const content = contentOf(verse);
+      const lang = content === verse.en ? "en" : (verse.language || state.lang);
+      return lang === "en" ? /[A-Za-z]/.test(char) : isChineseChar(char);
+    }
+
+    function maskedText(verse) {
+      const visibleStride = Math.max(2, 5 - state.hint);
+      const text = contentOf(verse).text;
+      return Array.from(text).map((char, index) => {
+        if (!isMemoryChar(char, verse)) return char;
+        return index % visibleStride === 0 ? char : "＿";
+      }).join("");
+    }
+
+    function initialText(verse) {
+      const chunkSize = Math.max(2, 6 - state.hint);
+      const text = contentOf(verse).text;
+      return Array.from(text).map((char, index) => {
+        if (!isMemoryChar(char, verse)) return char;
+        return index % chunkSize === 0 ? char : "·";
+      }).join("");
+    }
+
+    function normalized(value, verse) {
+      return Array.from(value)
+        .filter((char) => isMemoryChar(char, verse))
+        .join("")
+        .toLowerCase();
+    }
+
+    function selfTestScore(verse) {
+      const sourceChars = Array.from(normalized(contentOf(verse).text, verse));
+      const typedChars = Array.from(normalized(state.answer, verse));
+      const total = Math.max(sourceChars.length, typedChars.length);
+      let correct = 0;
+
+      for (let index = 0; index < total; index += 1) {
+        if (sourceChars[index] && sourceChars[index] === typedChars[index]) {
+          correct += 1;
+        }
+      }
+
+      return {
+        correct,
+        sourceLength: sourceChars.length,
+        typedLength: typedChars.length,
+        total,
+        percent: total ? Math.round((correct / total) * 100) : 0
+      };
+    }
+
+    function compareText(verse) {
+      if (!state.answer.trim()) return t("compareEmpty");
+      if (!state.selfTestChecked) return t("compareEmpty");
+
+      const score = selfTestScore(verse);
+      const source = contentOf(verse).text;
+      const summary = `${t("accuracy")}：${score.percent}% · ${t("matchedChars")}：${score.correct}/${score.sourceLength} · ${t("typedChars")}：${score.typedLength}`;
+      const matchText = score.percent === 100 ? `${summary}\n${t("compareMatch")}` : summary;
+      return `${matchText}\n${t("source")}：${source}`;
+    }
+
+    function speechRateValue() {
+      return { slow: 0.72, normal: 0.9, fast: 1.08 }[state.speechRate] || 0.9;
+    }
+
+    function speechLangFor(verse) {
+      const content = contentOf(verse);
+      const sourceLang = verse.language || (content === verse.en ? "en" : state.lang);
+      return sourceLang === "en" ? "en-US" : "zh-CN";
+    }
+
+    function speechTextFor(verse) {
+      const separator = speechLangFor(verse) === "zh-CN" ? "。" : ". ";
+      return `${reference(verse)}${separator}${contentOf(verse).text}`;
+    }
+
+    function speechIsAvailable() {
+      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    }
+
+    function createUtterance(verse) {
+      const utterance = new SpeechSynthesisUtterance(speechTextFor(verse));
+      utterance.lang = speechLangFor(verse);
+      utterance.rate = speechRateValue();
+      utterance.pitch = 1;
+
+      const voices = speechSynthesis.getVoices();
+      const matchingVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith(utterance.lang.toLowerCase().slice(0, 2)));
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
+
+      return utterance;
+    }
+
+    function stopSpeaking() {
+      loopPlayback.active = false;
+      loopPlayback.session += 1;
+      loopPlayback.currentID = null;
+      if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
+      }
+      updateLoopStatus();
+    }
+
+    function speakVerse(verse) {
+      if (!speechIsAvailable()) {
+        alert(t("speechUnavailable"));
+        return;
+      }
+
+      stopSpeaking();
+      speechSynthesis.speak(createUtterance(verse));
+    }
+
+    function selectedLoopVerses() {
+      const ids = new Set(currentVerseIDs());
+      state.loopVerseIDs = state.loopVerseIDs.filter((id) => ids.has(id));
+
+      return state.loopVerseIDs
+        .map((id) => allVerses().find((verse) => verse.id === id))
+        .filter(Boolean);
+    }
+
+    function loopLimit() {
+      if (state.loopMode === "once") return 1;
+      if (state.loopMode === "twice") return 2;
+      return Infinity;
+    }
+
+    function updateLoopStatus() {
+      const status = document.querySelector("#listenStatus");
+      if (!status) return;
+
+      if (!loopPlayback.active) {
+        status.textContent = `${t("listenSelected")}：${selectedLoopVerses().length}`;
+        return;
+      }
+
+      const verse = allVerses().find((item) => item.id === loopPlayback.currentID);
+      const position = loopPlayback.index + 1;
+      const loopText = state.loopMode === "forever" ? "∞" : `${loopPlayback.loopCount + 1}/${loopLimit()}`;
+      status.textContent = verse
+        ? `${t("listeningNow")}：${reference(verse)} · ${position}/${loopPlayback.ids.length} · ${loopText}`
+        : `${t("listeningNow")}...`;
+    }
+
+    function finishLoopReading() {
+      loopPlayback.active = false;
+      loopPlayback.currentID = null;
+      updateLoopStatus();
+      if (state.tab === "listen" && !state.detailID) render();
+    }
+
+    function playNextLoopVerse(session) {
+      if (!loopPlayback.active || session !== loopPlayback.session) return;
+
+      if (loopPlayback.index >= loopPlayback.ids.length) {
+        loopPlayback.loopCount += 1;
+        if (loopPlayback.loopCount >= loopLimit()) {
+          finishLoopReading();
+          return;
+        }
+        loopPlayback.index = 0;
+      }
+
+      const verse = allVerses().find((item) => item.id === loopPlayback.ids[loopPlayback.index]);
+      if (!verse) {
+        loopPlayback.index += 1;
+        playNextLoopVerse(session);
+        return;
+      }
+
+      loopPlayback.currentID = verse.id;
+      updateLoopStatus();
+
+      const utterance = createUtterance(verse);
+      utterance.onend = () => {
+        if (!loopPlayback.active || session !== loopPlayback.session) return;
+        loopPlayback.index += 1;
+        playNextLoopVerse(session);
+      };
+      utterance.onerror = utterance.onend;
+      speechSynthesis.speak(utterance);
+    }
+
+    function startLoopReading() {
+      if (!speechIsAvailable()) {
+        alert(t("speechUnavailable"));
+        return;
+      }
+
+      const verses = selectedLoopVerses();
+      if (!verses.length) {
+        alert(t("noListenSelection"));
+        return;
+      }
+
+      stopSpeaking();
+      loopPlayback.active = true;
+      loopPlayback.session += 1;
+      loopPlayback.ids = verses.map((verse) => verse.id);
+      loopPlayback.index = 0;
+      loopPlayback.loopCount = 0;
+      loopPlayback.currentID = null;
+      const session = loopPlayback.session;
+      render();
+      playNextLoopVerse(session);
+    }
+
+    function nivComparisonURL(verse) {
+      const query = nivQueriesByID[verse.id];
+      if (!query) return "";
+      return `https://www.biblegateway.com/passage/?search=${encodeURIComponent(query)}&version=NIV`;
+    }
+
+    function featureIcon(kind) {
+      const paths = {
+        library: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/>',
+        favorites: '<path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91L12 3Z"/>',
+        listen: '<path d="M4 14a8 8 0 0 1 16 0"/><path d="M18 19h1a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-1v6ZM6 19H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1v6Z"/><path d="M18 19c0 1.1-.9 2-2 2h-3"/>',
+        progress: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
+      };
+      return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[kind] || paths.library}</svg>`;
+    }
+
+    function tabHeroHTML(kind, title, note, value, label) {
+      return `
+        <section class="tab-hero tab-hero-${kind}">
+          <span class="tab-hero-icon">${featureIcon(kind)}</span>
+          <div class="tab-hero-copy">
+            <h2>${title}</h2>
+            <p>${note}</p>
+          </div>
+          <div class="tab-hero-stat"><strong>${value}</strong><span>${label}</span></div>
+        </section>
+      `;
+    }
+
+    function verseCard(verse) {
+      const progress = progressFor(verse);
+      const content = contentOf(verse);
+      const progressLabel = progress.isMemorized
+        ? `<span class="pill done">✓ ${t("done")}</span>`
+        : progress.reviewCount > 0
+          ? `<span class="pill practice">↻ ${t("reviewed")} ${progress.reviewCount} ${t("times")}</span>`
+          : "";
+
+      return `
+        <button class="verse-card" data-open="${verse.id}">
+          <div class="verse-head">
+            <span class="ref">${reference(verse)}</span>
+            ${state.favorites.has(verse.id) ? `<span class="star">★</span>` : ""}
+          </div>
+          <p class="verse-text">${escapeHTML(content.text)}</p>
+          <div class="meta-row">
+            <span class="pill">${escapeHTML(content.theme)}</span>
+            <span class="pill">${verse.custom ? t("custom") : t("builtIn")}</span>
+            ${progressLabel}
+          </div>
+        </button>
+      `;
+    }
+
+    function scriptureReference(verse) {
+      const fullReference = reference(verse);
+      const separatorIndex = fullReference.indexOf("·");
+      return separatorIndex >= 0 ? fullReference.slice(separatorIndex + 1).trim() : fullReference;
+    }
+
+    function memoryGroups(section) {
+      const groups = [];
+      builtInVerses
+        .filter((verse) => verse.section === section)
+        .forEach((verse) => {
+          const topic = contentOf(verse).book;
+          let group = groups.find((item) => item.topic === topic);
+          if (!group) {
+            group = { id: verse.id, section, topic, verses: [] };
+            groups.push(group);
+          }
+          group.verses.push(verse);
+        });
+      return groups;
+    }
+
+    function currentPair() {
+      for (const section of ["五个确据", "A", "B", "C", "D", "E"]) {
+        const pair = memoryGroups(section).find((item) => item.id === state.pairID);
+        if (pair) return pair;
+      }
+      return null;
+    }
+
+    function pairProgressLabel(pair) {
+      const item = state.pairProgress[pair.id];
+      if (item && item.status === "mastered") return `✓ ${t("pairMastered")}`;
+      if (item && item.reviewCount > 0) return `↻ ${t("pairPracticing")}`;
+      return t("pairNew");
+    }
+
+    function pairStatusClass(pair) {
+      const item = state.pairProgress[pair.id];
+      if (item && item.status === "mastered") return "mastered";
+      if (item && item.reviewCount > 0) return "practicing";
+      return "new";
+    }
+
+    function pairAnswerHTML(pair) {
+      return pair.verses.map((verse, index) => `
+        <article class="card pair-verse">
+          <span class="pair-number">${index + 1}</span>
+          <h3 class="pair-reference">${escapeHTML(scriptureReference(verse))}</h3>
+          <p class="pair-text">${escapeHTML(contentOf(verse).text)}</p>
+        </article>
+      `).join("");
+    }
+
+    function speakPair(pair) {
+      if (!speechIsAvailable()) {
+        alert(t("speechUnavailable"));
+        return;
+      }
+      stopSpeaking();
+      pair.verses.forEach((verse) => speechSynthesis.speak(createUtterance(verse)));
+    }
+
+    function passageCountLabel(pair) {
+      return pair.verses.length === 1 ? t("singleVerse") : t("pairedVerses");
+    }
+
+    function practiceSteps(activeStage) {
+      const stages = [
+        { id: "recall", label: t("stepRecall") },
+        { id: "check", label: t("stepWrite") },
+        { id: "result", label: t("stepReview") }
+      ];
+      const activeIndex = stages.findIndex((stage) => stage.id === activeStage);
+      return `<div class="practice-steps">${stages.map((stage, index) => `
+        <span class="practice-step ${index <= activeIndex ? "active" : ""}">${index + 1}. ${stage.label}</span>
+      `).join("")}</div>`;
+    }
+
+    function parsedReference(verse) {
+      const value = scriptureReference(verse).trim();
+      const match = value.match(/^(.+?)\s*(\d+)\s*[:：]\s*(.+)$/);
+      return match
+        ? { book: match[1].trim(), chapter: match[2].trim(), verse: match[3].trim() }
+        : { book: value, chapter: "", verse: "" };
+    }
+
+    function referenceBookOptions(selectedBook) {
+      const books = Array.from(new Set(builtInVerses.map((verse) => parsedReference(verse).book))).sort((a, b) => a.localeCompare(b));
+      return `
+        <option value="">${t("chooseBook")}</option>
+        ${books.map((book) => `<option value="${escapeHTML(book)}" ${book === selectedBook ? "selected" : ""}>${escapeHTML(book)}</option>`).join("")}
+      `;
+    }
+
+    function emptyPairAnswers(pair) {
+      return pair.verses.map(() => ({ book: "", chapter: "", verse: "", text: "" }));
+    }
+
+    function normalizedReferencePart(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll("，", ",")
+        .replaceAll("－", "-")
+        .replaceAll("—", "-");
+    }
+
+    function textSimilarity(source, typed, verse) {
+      const sourceChars = Array.from(normalized(source, verse));
+      const typedChars = Array.from(normalized(typed, verse));
+      if (!sourceChars.length) return 0;
+      const previous = Array.from({ length: typedChars.length + 1 }, (_, index) => index);
+
+      sourceChars.forEach((sourceChar, sourceIndex) => {
+        const current = [sourceIndex + 1];
+        typedChars.forEach((typedChar, typedIndex) => {
+          current[typedIndex + 1] = sourceChar === typedChar
+            ? previous[typedIndex]
+            : Math.min(previous[typedIndex], previous[typedIndex + 1], current[typedIndex]) + 1;
+        });
+        previous.splice(0, previous.length, ...current);
+      });
+
+      const distance = previous[typedChars.length];
+      const longest = Math.max(sourceChars.length, typedChars.length, 1);
+      return Math.max(0, Math.round((1 - distance / longest) * 100));
+    }
+
+    function auditPair(pair) {
+      const evaluateAnswer = (answer, verse, answerIndex) => {
+        const expected = parsedReference(verse);
+        const referenceCorrect = normalizedReferencePart(answer.book) === normalizedReferencePart(expected.book)
+          && normalizedReferencePart(answer.chapter) === normalizedReferencePart(expected.chapter)
+          && normalizedReferencePart(answer.verse) === normalizedReferencePart(expected.verse);
+        const textPercent = textSimilarity(contentOf(verse).text, answer.text || "", verse);
+        return { verse, expected, answer, answerIndex, referenceCorrect, textPercent };
+      };
+      const answers = pair.verses.map((_, index) => state.pairAnswers[index] || {});
+      const directItems = pair.verses.map((verse, index) => evaluateAnswer(answers[index], verse, index));
+      let items = directItems;
+
+      if (pair.verses.length === 2) {
+        const swappedItems = [
+          evaluateAnswer(answers[0], pair.verses[1], 0),
+          evaluateAnswer(answers[1], pair.verses[0], 1)
+        ];
+        const assignmentScore = (assignment) => assignment.reduce(
+          (sum, item) => sum + item.textPercent + (item.referenceCorrect ? 100 : 0),
+          0
+        );
+        if (assignmentScore(swappedItems) > assignmentScore(directItems)) items = swappedItems;
+      }
+
+      const averageText = items.length
+        ? Math.round(items.reduce((sum, item) => sum + item.textPercent, 0) / items.length)
+        : 0;
+      const allReferencesCorrect = items.every((item) => item.referenceCorrect);
+      const allTextsExact = items.every((item) => item.textPercent === 100);
+      const mastered = allReferencesCorrect && allTextsExact;
+      const overall = items.length
+        ? Math.round(items.reduce((sum, item) => sum + item.textPercent * .8 + (item.referenceCorrect ? 20 : 0), 0) / items.length)
+        : 0;
+      return { items, averageText, allReferencesCorrect, allTextsExact, mastered, overall };
+    }
+
+    function formatAnswerReference(answer) {
+      if (!answer || !answer.book) return "—";
+      const chapter = answer.chapter || "?";
+      const verse = answer.verse || "?";
+      return `${answer.book} ${chapter}:${verse}`;
+    }
+
+    function savePairAudit(pair, audit) {
+      const oldPair = state.pairProgress[pair.id] || { reviewCount: 0 };
+      state.pairProgress[pair.id] = {
+        reviewCount: oldPair.reviewCount + 1,
+        status: audit.mastered ? "mastered" : "practicing",
+        lastReviewedAt: new Date().toISOString(),
+        lastScore: audit.overall
+      };
+      pair.verses.forEach((verse) => {
+        const oldVerse = progressFor(verse);
+        state.progress[verse.id] = {
+          reviewCount: oldVerse.reviewCount + 1,
+          isMemorized: audit.mastered,
+          lastReviewedAt: t("justNow")
+        };
+      });
+      saveState();
+    }
+
+    function answerFormHTML(pair) {
+      return pair.verses.map((verse, index) => {
+        const answer = state.pairAnswers[index] || { book: "", chapter: "", verse: "", text: "" };
+        const label = pair.verses.length === 1 ? t("singleVerse") : (index === 0 ? t("firstVerse") : t("secondVerse"));
+        return `
+          <section class="answer-sheet">
+            <h3>${index + 1}. ${label}</h3>
+            <div class="reference-inputs">
+              <select data-answer-index="${index}" data-answer-field="book" aria-label="${label} ${t("chooseBook")}">
+                ${referenceBookOptions(answer.book)}
+              </select>
+              <input class="field" inputmode="numeric" data-answer-index="${index}" data-answer-field="chapter" value="${escapeHTML(answer.chapter)}" placeholder="${t("chapterPlaceholder")}" aria-label="${label} ${t("chapterPlaceholder")}">
+              <input class="field" inputmode="text" data-answer-index="${index}" data-answer-field="verse" value="${escapeHTML(answer.verse)}" placeholder="${t("versePlaceholder")}" aria-label="${label} ${t("versePlaceholder")}">
+            </div>
+            <textarea data-answer-index="${index}" data-answer-field="text" placeholder="${t("verseAnswerPlaceholder")}" aria-label="${label} ${t("verseAnswerPlaceholder")}">${escapeHTML(answer.text)}</textarea>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function auditResultsHTML(pair, audit) {
+      return audit.items.map((item, index) => `
+        <section class="answer-result">
+          <div class="answer-result-head">
+            <strong>${index + 1}. ${pair.verses.length === 1 ? t("singleVerse") : (index === 0 ? t("firstVerse") : t("secondVerse"))}</strong>
+            <span class="score-badge ${item.textPercent < 90 ? "needs-work" : ""}">${t("textCompleteness")} ${item.textPercent}%</span>
+          </div>
+          <p class="small-note">${item.referenceCorrect ? `✓ ${t("referenceCorrect")}` : `✕ ${t("referenceIncorrect")}`}</p>
+          <p class="small-note">${t("yourReference")}：${escapeHTML(formatAnswerReference(item.answer))}</p>
+          <h3 class="pair-reference">${t("correctReference")}：${escapeHTML(scriptureReference(item.verse))}</h3>
+          <p class="pair-text">${escapeHTML(contentOf(item.verse).text)}</p>
+        </section>
+      `).join("");
+    }
+
+    function renderPairPractice() {
+      const pair = currentPair();
+      if (!pair) {
+        state.pairID = null;
+        render();
+        return;
+      }
+
+      pageTitle.textContent = pair.topic;
+      eyebrow.textContent = `${sectionLabel(pair.section)} · ${passageCountLabel(pair)}`;
+
+      if (state.pairStage === "recall") {
+        app.innerHTML = `
+          <button class="detail-back" id="pairBackButton">‹ ${t("backToTopics")}</button>
+          ${practiceSteps("recall")}
+          <section class="recall-stage">
+            <p class="pair-kicker">${t("recallOnlyTopic")}</p>
+            <h2 class="recall-topic">${escapeHTML(pair.topic)}</h2>
+            <p class="recall-instruction">${pair.verses.length === 1 ? t("recallSingleInstruction") : t("recallInstruction")}</p>
+          </section>
+          <div class="actions">
+            <button class="btn primary" id="beginCheckButton">✓ ${t("beginCheck")}</button>
+          </div>
+        `;
+      } else if (state.pairStage === "check") {
+        app.innerHTML = `
+          <button class="detail-back" id="pairBackButton">‹ ${t("backToTopics")}</button>
+          ${practiceSteps("check")}
+          <div class="pair-practice-header">
+            <p class="pair-kicker">${escapeHTML(pair.topic)}</p>
+            <h2>${t("stepWrite")}</h2>
+            <p class="small-note">${t("checkIntro")}</p>
+            ${pair.verses.length === 2 ? `<p class="small-note">↕ ${t("pairOrderNote")}</p>` : ""}
+          </div>
+          <form id="pairAnswerForm">
+            ${answerFormHTML(pair)}
+            <button class="btn primary" type="submit" style="width:100%">✓ ${t("submitAudit")}</button>
+          </form>
+        `;
+      } else {
+        const audit = auditPair(pair);
+        app.innerHTML = `
+          <button class="detail-back" id="pairBackButton">‹ ${t("backToTopics")}</button>
+          ${practiceSteps("result")}
+          <div class="result-summary">
+            <div class="result-score">${audit.overall}%</div>
+            <h2>${audit.mastered ? t("auditComplete") : t("auditPractice")}</h2>
+            <p>${t("auditRule")}</p>
+          </div>
+          ${auditResultsHTML(pair, audit)}
+          <div class="actions">
+            <button class="btn" id="speakPairButton">▶ ${t("speak")}</button>
+            <button class="btn primary" id="retryPairButton">↺ ${t("retryRecall")}</button>
+          </div>
+        `;
+      }
+
+      document.querySelector("#pairBackButton").addEventListener("click", () => {
+        stopSpeaking();
+        state.pairID = null;
+        state.pairStage = "recall";
+        state.pairAnswers = [];
+        render();
+      });
+
+      const speakPairButton = document.querySelector("#speakPairButton");
+      if (speakPairButton) speakPairButton.addEventListener("click", () => speakPair(pair));
+
+      const beginCheckButton = document.querySelector("#beginCheckButton");
+      if (beginCheckButton) beginCheckButton.addEventListener("click", () => {
+        state.pairAnswers = emptyPairAnswers(pair);
+        state.pairStage = "check";
+        render();
+      });
+
+      document.querySelectorAll("[data-answer-index]").forEach((field) => {
+        field.addEventListener("input", () => {
+          const index = Number(field.dataset.answerIndex);
+          const answerField = field.dataset.answerField;
+          if (!state.pairAnswers[index]) state.pairAnswers[index] = { book: "", chapter: "", verse: "", text: "" };
+          state.pairAnswers[index][answerField] = field.value;
+        });
+      });
+
+      const pairAnswerForm = document.querySelector("#pairAnswerForm");
+      if (pairAnswerForm) pairAnswerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const audit = auditPair(pair);
+        savePairAudit(pair, audit);
+        state.pairStage = "result";
+        render();
+      });
+
+      const retryPairButton = document.querySelector("#retryPairButton");
+      if (retryPairButton) retryPairButton.addEventListener("click", () => {
+        state.pairAnswers = [];
+        state.pairStage = "recall";
+        render();
+      });
+    }
+
+    function renderToday() {
+      const pairs = memoryGroups(state.memorizeSection);
+      const allTopics = ["五个确据", "A", "B", "C", "D", "E"].flatMap(memoryGroups);
+      const masteredTopics = allTopics.filter((pair) => pairStatusClass(pair) === "mastered").length;
+      const progressPercent = allTopics.length ? Math.round((masteredTopics / allTopics.length) * 100) : 0;
+      app.innerHTML = `
+        <div class="card memory-hero">
+          <div class="hero-eyebrow"><span class="hero-spark">✦</span><span>${t("memoryMotto")}</span></div>
+          <h2>${t("pairHeroTitle")}</h2>
+          <p>${t("pairHeroNote")}</p>
+          <div class="hero-progress-row">
+            <span>${t("masteredTopics")}</span>
+            <strong>${masteredTopics}/${allTopics.length}</strong>
+          </div>
+          <div class="hero-progress-track"><span style="width:${progressPercent}%"></span></div>
+        </div>
+
+        <div class="memory-sections" aria-label="${t("chooseTopic")}">
+          ${["五个确据", "A", "B", "C", "D", "E"].map((section) => `
+            <button class="${state.memorizeSection === section ? "active" : ""}" data-memory-section="${section}">${sectionLabel(section)}</button>
+          `).join("")}
+        </div>
+
+        <div class="section-heading">
+          <h2 class="section-title">${sectionLabel(state.memorizeSection)}</h2>
+          <span>${pairs.length}${t("topicCount")}</span>
+        </div>
+        <div class="topic-grid">
+          ${pairs.map((pair, index) => `
+            <button class="pair-card ${pairStatusClass(pair)}" data-open-pair="${pair.id}">
+              <span class="topic-card-top">
+                <span class="topic-order">${String(index + 1).padStart(2, "0")}</span>
+                <span class="topic-arrow" aria-hidden="true">→</span>
+              </span>
+              <strong>${escapeHTML(pair.topic)}</strong>
+              <span class="pair-progress">${pairProgressLabel(pair)}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      document.querySelectorAll("[data-memory-section]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.memorizeSection = button.dataset.memorySection;
+          render();
+        });
+      });
+
+      document.querySelectorAll("[data-open-pair]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.pairID = button.dataset.openPair;
+          state.pairStage = "recall";
+          state.pairAnswers = [];
+          render();
+        });
+      });
+    }
+
+    function libraryVersesForCurrentFilter() {
+      return allVerses().filter((verse) => {
+        if (state.libraryFilter === "all") return true;
+        if (state.libraryFilter === "custom") return verse.custom;
+        return !verse.custom && sectionOf(verse) === state.libraryFilter;
+      });
+    }
+
+    function libraryResultsHTML() {
+      const q = state.search.trim();
+      const verses = libraryVersesForCurrentFilter();
+      const filtered = q
+        ? verses.filter((verse) => {
+            const content = contentOf(verse);
+            return reference(verse).includes(q) || content.text.includes(q) || content.theme.includes(q);
+          })
+        : verses;
+
+      const groups = filtered.reduce((acc, verse) => {
+        const theme = contentOf(verse).theme;
+        acc[theme] = acc[theme] || [];
+        acc[theme].push(verse);
+        return acc;
+      }, {});
+
+      return `
+        ${Object.keys(groups).sort(sortThemes).map((theme) => `
+          <div class="list-section-heading">
+            <h2 class="section-title">${escapeHTML(theme)}</h2>
+            <span>${groups[theme].length}</span>
+          </div>
+          ${groups[theme].map(verseCard).join("")}
+        `).join("") || `<div class="empty">${t("noResults")}</div>`}
+      `;
+    }
+
+    function updateLibraryResults() {
+      const results = document.querySelector("#libraryResults");
+      if (!results) return;
+      results.innerHTML = libraryResultsHTML();
+      wireVerseCards();
+    }
+
+    function renderLibrary() {
+      app.innerHTML = `
+        ${tabHeroHTML("library", t("libraryHeroTitle"), t("libraryHeroNote"), allVerses().length, t("stats.verses"))}
+
+        <div class="section-heading"><h2 class="section-title">${t("libraryTools")}</h2></div>
+        <div class="card library-toolbar">
+          <select class="field library-filter" id="libraryFilter" aria-label="${t("builtinFilter")}">
+            ${libraryFilterOptions().map((option) => `
+              <option value="${option.value}" ${state.libraryFilter === option.value ? "selected" : ""}>${option.label}</option>
+            `).join("")}
+          </select>
+          <div class="search-wrap">
+            <span aria-hidden="true">⌕</span>
+            <input class="search" id="searchInput" placeholder="${t("search")}" value="${escapeHTML(state.search)}">
+          </div>
+        </div>
+
+        <details class="card add-card">
+          <summary>${t("addSummary")}</summary>
+          <form class="form-grid" id="customVerseForm">
+            <p class="small-note">${t("customNote")}</p>
+            <div class="backup-warning">${t("storageWarning")}</div>
+            <div class="backup-actions">
+              <button class="btn" type="button" id="exportDataButton">⇩ ${t("exportData")}</button>
+              <button class="btn" type="button" id="importDataButton">⇧ ${t("importData")}</button>
+            </div>
+            <input class="hidden-file" id="importDataFile" type="file" accept="application/json,.json">
+            <p class="small-note">${t("importHelp")}</p>
+            <div class="form-row">
+              <select id="customLanguage" aria-label="${t("language")}">
+                <option value="zh">${t("chinese")}</option>
+                <option value="en">${t("english")}</option>
+              </select>
+              <input class="field" id="customTheme" placeholder="${t("theme")}">
+            </div>
+            <input class="field" id="customReference" placeholder="${t("reference")}">
+            <textarea id="customText" placeholder="${t("textPlaceholder")}"></textarea>
+            <button class="btn primary" type="submit">＋ ${t("addButton")}</button>
+          </form>
+        </details>
+        <div id="libraryResults">${libraryResultsHTML()}</div>
+      `;
+
+      document.querySelector("#exportDataButton").addEventListener("click", exportUserData);
+      document.querySelector("#importDataButton").addEventListener("click", () => {
+        document.querySelector("#importDataFile").click();
+      });
+      document.querySelector("#importDataFile").addEventListener("change", (event) => {
+        importUserData(event.target.files[0]);
+        event.target.value = "";
+      });
+
+      document.querySelector("#customVerseForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const language = document.querySelector("#customLanguage").value;
+        const referenceValue = document.querySelector("#customReference").value.trim();
+        const themeValue = document.querySelector("#customTheme").value.trim();
+        const textValue = document.querySelector("#customText").value.trim();
+
+        if (!referenceValue || !textValue) {
+          alert(t("addError"));
+          return;
+        }
+
+        const fallbackTheme = language === "zh" ? "自定义" : "Custom";
+        const customContent = {
+          book: referenceValue,
+          text: textValue,
+          theme: themeValue || fallbackTheme
+        };
+
+        state.customVerses.unshift({
+          id: `custom-${Date.now()}`,
+          custom: true,
+          language,
+          referenceOverride: referenceValue,
+          chapter: 0,
+          verse: 0,
+          [language]: customContent
+        });
+        state.search = "";
+        saveState();
+        render();
+      });
+
+      document.querySelector("#libraryFilter").addEventListener("change", (event) => {
+        state.libraryFilter = event.target.value;
+        state.search = "";
+        render();
+      });
+
+      document.querySelector("#searchInput").addEventListener("input", (event) => {
+        state.search = event.target.value;
+        updateLibraryResults();
+      });
+    }
+
+    function renderFavorites() {
+      const favorites = allVerses().filter((verse) => state.favorites.has(verse.id));
+      app.innerHTML = `
+        ${tabHeroHTML("favorites", t("favoritesHeroTitle"), t("favoritesHeroNote"), favorites.length, t("stats.favorites"))}
+        <div class="section-heading">
+          <h2 class="section-title">${t("savedCollection")}</h2>
+          <span>${favorites.length}</span>
+        </div>
+        ${favorites.length ? favorites.map(verseCard).join("") : `<div class="empty">${t("noFavorites")}</div>`}
+      `;
+    }
+
+    function renderListen() {
+      const selectedIDs = new Set(state.loopVerseIDs);
+      const groups = allVerses().reduce((acc, verse) => {
+        const theme = contentOf(verse).theme;
+        acc[theme] = acc[theme] || [];
+        acc[theme].push(verse);
+        return acc;
+      }, {});
+
+      app.innerHTML = `
+        ${tabHeroHTML("listen", t("listenHeroTitle"), t("listenHeroNote"), selectedLoopVerses().length, t("listenSelected"))}
+
+        <div class="card listen-console">
+          <p class="small-note">${t("listenNote")}</p>
+          <div class="listen-controls">
+            <select class="speech-rate" id="listenSpeechRate" aria-label="${t("speechRate")}">
+              <option value="slow" ${state.speechRate === "slow" ? "selected" : ""}>${t("rateSlow")}</option>
+              <option value="normal" ${state.speechRate === "normal" ? "selected" : ""}>${t("rateNormal")}</option>
+              <option value="fast" ${state.speechRate === "fast" ? "selected" : ""}>${t("rateFast")}</option>
+            </select>
+            <select class="loop-mode" id="loopMode" aria-label="${t("loopMode")}">
+              <option value="once" ${state.loopMode === "once" ? "selected" : ""}>${t("loopOnce")}</option>
+              <option value="twice" ${state.loopMode === "twice" ? "selected" : ""}>${t("loopTwice")}</option>
+              <option value="forever" ${state.loopMode === "forever" ? "selected" : ""}>${t("loopForever")}</option>
+            </select>
+            <button class="btn primary" id="startLoopButton">▶ ${t("startLoop")}</button>
+            <button class="btn" id="stopLoopButton">■ ${t("stopLoop")}</button>
+          </div>
+          <p class="small-note" id="listenStatus">${t("listenSelected")}：${selectedLoopVerses().length}</p>
+          <div class="listen-actions">
+            <button class="btn" data-listen-select="today">${t("selectToday")}</button>
+            <button class="btn" data-listen-select="favorites">${t("selectFavorites")}</button>
+            <button class="btn" data-listen-select="all">${t("selectAll")}</button>
+            <button class="btn" data-listen-select="clear">${t("clearSelection")}</button>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <h2 class="section-title">${t("listeningCollection")}</h2>
+          <span>${allVerses().length}</span>
+        </div>
+        <div class="listen-picker">
+          ${Object.keys(groups).sort(sortThemes).map((theme) => `
+            <div class="list-section-heading"><h3 class="section-title">${escapeHTML(theme)}</h3><span>${groups[theme].length}</span></div>
+            ${groups[theme].map((verse) => {
+              const content = contentOf(verse);
+              const isActive = loopPlayback.active && loopPlayback.currentID === verse.id;
+              return `
+                <label class="listen-item ${isActive ? "active" : ""}">
+                  <input type="checkbox" data-loop-id="${verse.id}" ${selectedIDs.has(verse.id) ? "checked" : ""}>
+                  <span>
+                    <strong>${reference(verse)}</strong>
+                    <p>${escapeHTML(content.text)}</p>
+                  </span>
+                </label>
+              `;
+            }).join("")}
+          `).join("")}
+        </div>
+      `;
+
+      document.querySelector("#listenSpeechRate").addEventListener("change", (event) => {
+        state.speechRate = event.target.value;
+        saveState();
+      });
+
+      document.querySelector("#loopMode").addEventListener("change", (event) => {
+        state.loopMode = event.target.value;
+        saveState();
+      });
+
+      document.querySelector("#startLoopButton").addEventListener("click", startLoopReading);
+      document.querySelector("#stopLoopButton").addEventListener("click", () => {
+        stopSpeaking();
+        render();
+      });
+
+      document.querySelectorAll("[data-listen-select]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.listenSelect;
+          if (action === "today") state.loopVerseIDs = todayVerses().map((verse) => verse.id);
+          if (action === "favorites") state.loopVerseIDs = allVerses().filter((verse) => state.favorites.has(verse.id)).map((verse) => verse.id);
+          if (action === "all") state.loopVerseIDs = allVerses().map((verse) => verse.id);
+          if (action === "clear") state.loopVerseIDs = [];
+          saveState();
+          render();
+        });
+      });
+
+      document.querySelectorAll("[data-loop-id]").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const checkedIDs = new Set(Array.from(document.querySelectorAll("[data-loop-id]:checked")).map((item) => item.dataset.loopId));
+          state.loopVerseIDs = allVerses().filter((verse) => checkedIDs.has(verse.id)).map((verse) => verse.id);
+          saveState();
+          updateLoopStatus();
+        });
+      });
+
+      updateLoopStatus();
+    }
+
+    function memorizedCount() {
+      const ids = currentVerseIDs();
+      return Object.entries(state.progress).filter(([id, item]) => ids.has(id) && item.isMemorized).length;
+    }
+
+    function favoriteCount() {
+      const ids = currentVerseIDs();
+      return Array.from(state.favorites).filter((id) => ids.has(id)).length;
+    }
+
+    function sectionOf(verse) {
+      return verse.section || contentOf(verse).theme;
+    }
+
+    function sectionLabel(section) {
+      if (section === "五个确据") return state.lang === "zh" ? "五个确据" : "Five Assurances";
+      return section;
+    }
+
+    function libraryFilterOptions() {
+      return [
+        { value: "all", label: t("allBuiltIn") },
+        ...["五个确据", "A", "B", "C", "D", "E"].map((section) => ({ value: section, label: sectionLabel(section) })),
+        { value: "custom", label: t("customOnly") }
+      ];
+    }
+
+    function sortThemes(a, b) {
+      const order = { "五个确据": 0, "Five Assurances": 0, A: 1, B: 2, C: 3, D: 4, E: 5 };
+      return (order[a] ?? 99) - (order[b] ?? 99) || a.localeCompare(b);
+    }
+
+    function renderProgress() {
+      const reviewed = allVerses()
+        .filter((verse) => progressFor(verse).lastReviewedAt || progressFor(verse).lastReviewedAtKey)
+        .sort((a, b) => progressFor(a).isMemorized === progressFor(b).isMemorized ? 0 : progressFor(a).isMemorized ? -1 : 1);
+
+      app.innerHTML = `
+        ${tabHeroHTML("progress", t("progressHeroTitle"), t("progressHeroNote"), `${memorizedCount()}/${allVerses().length}`, t("stats.memorized"))}
+
+        <div class="section-heading"><h2 class="section-title">${t("progressOverview")}</h2></div>
+        <div class="card progress-overview">
+          <div class="stats">
+            <div class="stat"><strong>${allVerses().length}</strong><span>${t("stats.total")}</span></div>
+            <div class="stat"><strong>${memorizedCount()}</strong><span>${t("stats.memorized")}</span></div>
+            <div class="stat"><strong>${favoriteCount()}</strong><span>${t("stats.favorites")}</span></div>
+          </div>
+        </div>
+
+        <div class="section-heading"><h2 class="section-title">${t("recentReview")}</h2><span>${reviewed.length}</span></div>
+        ${reviewed.length ? reviewed.map(verseCard).join("") : `<div class="empty">${t("noReview")}</div>`}
+      `;
+    }
+
+    function scriptureBody(verse) {
+      const text = contentOf(verse).text;
+      if (state.mode === "full") return `<div class="scripture-panel">${escapeHTML(text)}</div>`;
+      if (state.mode === "blanks") return `<div class="scripture-panel">${escapeHTML(maskedText(verse))}</div>`;
+      if (state.mode === "initials") return `<div class="scripture-panel">${escapeHTML(initialText(verse))}</div>`;
+
+      return `
+        <div class="scripture-panel">
+          <textarea id="answerInput" placeholder="${t("selfTestPlaceholder")}">${escapeHTML(state.answer)}</textarea>
+          <p class="compare">${escapeHTML(compareText(verse))}</p>
+        </div>
+      `;
+    }
+
+    function renderDetail() {
+      const verse = allVerses().find((item) => item.id === state.detailID) || allVerses()[0];
+      const progress = progressFor(verse);
+      const content = contentOf(verse);
+      const nivURL = nivComparisonURL(verse);
+
+      pageTitle.textContent = reference(verse);
+      eyebrow.textContent = content.theme;
+
+      app.innerHTML = `
+        <button class="detail-back" id="backButton">‹ ${t("back")}</button>
+        <div class="detail-title-row">
+          <h2>${reference(verse)}</h2>
+          <button class="icon-btn" id="favoriteButton" aria-label="${t("stats.favorites")}">${state.favorites.has(verse.id) ? "★" : "☆"}</button>
+        </div>
+        <p class="small-note">${escapeHTML(content.theme)} · ${verse.custom ? t("custom") : t("builtIn")}</p>
+        ${nivURL ? `<p class="small-note"><a class="compare-link" href="${nivURL}" target="_blank" rel="noopener noreferrer">${t("nivCompare")}</a> · ${t("nivNote")}</p>` : ""}
+
+        <div class="section-title">${t("memorizeMode")}</div>
+        <div class="segmented">
+          ${["full", "blanks", "initials", "selfTest"].map((mode) => `
+            <button class="${state.mode === mode ? "active" : ""}" data-mode="${mode}">${t(`modes.${mode}`)}</button>
+          `).join("")}
+        </div>
+
+        ${scriptureBody(verse)}
+
+        <div class="speech-controls">
+          <select class="speech-rate" id="speechRate" aria-label="${t("speechRate")}">
+            <option value="slow" ${state.speechRate === "slow" ? "selected" : ""}>${t("rateSlow")}</option>
+            <option value="normal" ${state.speechRate === "normal" ? "selected" : ""}>${t("rateNormal")}</option>
+            <option value="fast" ${state.speechRate === "fast" ? "selected" : ""}>${t("rateFast")}</option>
+          </select>
+          <button class="btn primary" id="speakButton">▶ ${t("speak")}</button>
+          <button class="btn" id="stopSpeakButton">■ ${t("stopSpeak")}</button>
+        </div>
+
+        <div class="actions">
+          ${state.mode === "blanks" || state.mode === "initials" ? `<button class="btn" id="hintButton">☼ ${t("hint")}</button>` : ""}
+          ${state.mode === "selfTest" ? `<button class="btn" id="checkAnswerButton">✓ ${t("checkAnswer")}</button>` : ""}
+          <button class="btn primary" id="doneButton">✓ ${t("markDone")}</button>
+          <button class="btn warn" id="resetButton">↺ ${t("reset")}</button>
+          ${verse.custom ? `<button class="btn warn" id="deleteCustomButton">× ${t("deleteCustom")}</button>` : ""}
+        </div>
+
+        <div class="card">
+          <strong>${progress.isMemorized ? t("done") : t("practicing")}</strong>
+          <p class="small-note">${t("reviewCount")}：${progress.reviewCount}</p>
+          ${progress.lastReviewedAt || progress.lastReviewedAtKey ? `<p class="small-note">${t("lastReviewed")}：${progress.lastReviewedAt || t(progress.lastReviewedAtKey)}</p>` : ""}
+        </div>
+      `;
+
+      document.querySelector("#backButton").addEventListener("click", () => {
+        stopSpeaking();
+        state.detailID = null;
+        state.mode = "full";
+        state.hint = 0;
+        state.answer = "";
+        state.selfTestChecked = false;
+        render();
+      });
+
+      document.querySelector("#favoriteButton").addEventListener("click", () => {
+        if (state.favorites.has(verse.id)) state.favorites.delete(verse.id);
+        else state.favorites.add(verse.id);
+        saveState();
+        render();
+      });
+
+      document.querySelector("#speechRate").addEventListener("change", (event) => {
+        state.speechRate = event.target.value;
+        saveState();
+      });
+
+      document.querySelector("#speakButton").addEventListener("click", () => {
+        speakVerse(verse);
+      });
+
+      document.querySelector("#stopSpeakButton").addEventListener("click", () => {
+        stopSpeaking();
+      });
+
+      document.querySelectorAll("[data-mode]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.mode = button.dataset.mode;
+          state.hint = 0;
+          state.answer = "";
+          state.selfTestChecked = false;
+          render();
+        });
+      });
+
+      const answerInput = document.querySelector("#answerInput");
+      if (answerInput) {
+        answerInput.addEventListener("input", (event) => {
+          state.answer = event.target.value;
+          state.selfTestChecked = false;
+          const compare = document.querySelector(".compare");
+          if (compare) compare.textContent = t("compareEmpty");
+        });
+      }
+
+      const checkAnswerButton = document.querySelector("#checkAnswerButton");
+      if (checkAnswerButton) {
+        checkAnswerButton.addEventListener("click", () => {
+          state.selfTestChecked = true;
+          render();
+        });
+      }
+
+      const hintButton = document.querySelector("#hintButton");
+      if (hintButton) {
+        hintButton.addEventListener("click", () => {
+          state.hint = Math.min(state.hint + 1, 3);
+          render();
+        });
+      }
+
+      document.querySelector("#doneButton").addEventListener("click", () => {
+        const old = progressFor(verse);
+        state.progress[verse.id] = {
+          reviewCount: old.reviewCount + 1,
+          isMemorized: true,
+          lastReviewedAt: t("justNow")
+        };
+        saveState();
+        render();
+      });
+
+      document.querySelector("#resetButton").addEventListener("click", () => {
+        state.progress[verse.id] = { reviewCount: 0, isMemorized: false, lastReviewedAt: null };
+        saveState();
+        render();
+      });
+
+      const deleteCustomButton = document.querySelector("#deleteCustomButton");
+      if (deleteCustomButton) {
+        deleteCustomButton.addEventListener("click", () => {
+          if (!verse.custom || !confirm(t("deleteConfirm"))) return;
+          stopSpeaking();
+          state.customVerses = state.customVerses.filter((item) => item.id !== verse.id);
+          state.favorites.delete(verse.id);
+          state.loopVerseIDs = state.loopVerseIDs.filter((id) => id !== verse.id);
+          delete state.progress[verse.id];
+          state.detailID = null;
+          state.mode = "full";
+          state.hint = 0;
+          state.answer = "";
+          state.selfTestChecked = false;
+          saveState();
+          render();
+        });
+      }
+    }
+
+    function wireVerseCards() {
+      document.querySelectorAll("[data-open]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.detailID = button.dataset.open;
+          state.mode = "full";
+          state.hint = 0;
+          state.answer = "";
+          state.selfTestChecked = false;
+          render();
+        });
+      });
+    }
+
+    function render() {
+      document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
+      const size = fontSizes[state.fontSize];
+      const interfaceScale = interfaceScales[state.fontSize] || 1;
+      document.documentElement.style.setProperty("--list-font-size", `${size.list}px`);
+      document.documentElement.style.setProperty("--reader-font-size", `${size.reader}px`);
+      [11, 12, 13, 14, 15, 16, 17, 18, 20, 24, 28].forEach((base) => {
+        document.documentElement.style.setProperty(`--ui-font-${base}`, `${Math.round(base * interfaceScale)}px`);
+      });
+      langSwitch.textContent = t("switchLang");
+      fontSizeLabel.textContent = t(`fontSizeLabel.${state.fontSize}`);
+      fontDown.disabled = state.fontSize === fontSteps[0];
+      fontUp.disabled = state.fontSize === fontSteps[fontSteps.length - 1];
+      tabButtons.forEach((button) => button.classList.toggle("active", button.dataset.tab === state.tab));
+      tabButtons.forEach((button) => {
+        button.querySelector("span:last-child").textContent = t(`nav.${button.dataset.tab}`);
+      });
+
+      if (state.pairID) {
+        renderPairPractice();
+        return;
+      }
+
+      if (state.detailID) {
+        renderDetail();
+        return;
+      }
+
+      const [subtitle, title] = t(`tabs.${state.tab}`);
+      eyebrow.textContent = subtitle;
+      pageTitle.textContent = title;
+
+      if (state.tab === "today") renderToday();
+      if (state.tab === "library") renderLibrary();
+      if (state.tab === "favorites") renderFavorites();
+      if (state.tab === "listen") renderListen();
+      if (state.tab === "progress") renderProgress();
+
+      wireVerseCards();
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        stopSpeaking();
+        state.tab = button.dataset.tab;
+        state.detailID = null;
+        state.pairID = null;
+        state.pairStage = "recall";
+        state.pairAnswers = [];
+        state.mode = "full";
+        state.hint = 0;
+        state.answer = "";
+        state.selfTestChecked = false;
+        render();
+      });
+    });
+
+    langSwitch.addEventListener("click", () => {
+      stopSpeaking();
+      state.lang = state.lang === "zh" ? "en" : "zh";
+      state.search = "";
+      state.answer = "";
+      saveState();
+      render();
+    });
+
+    fontDown.addEventListener("click", () => {
+      const index = fontSteps.indexOf(state.fontSize);
+      state.fontSize = fontSteps[Math.max(0, index - 1)];
+      localStorage.setItem("scripture.prototype.fontSize", state.fontSize);
+      saveState();
+      render();
+    });
+
+    fontUp.addEventListener("click", () => {
+      const index = fontSteps.indexOf(state.fontSize);
+      state.fontSize = fontSteps[Math.min(fontSteps.length - 1, index + 1)];
+      localStorage.setItem("scripture.prototype.fontSize", state.fontSize);
+      saveState();
+      render();
+    });
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

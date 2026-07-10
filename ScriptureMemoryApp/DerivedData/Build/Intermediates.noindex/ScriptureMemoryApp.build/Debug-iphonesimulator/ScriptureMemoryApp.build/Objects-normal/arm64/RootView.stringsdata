@@ -1,0 +1,40 @@
+{
+  "source": "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/RootView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "今日",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 8
+        }
+      },
+      {
+        "comment": "",
+        "key": "经文库",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 13
+        }
+      },
+      {
+        "comment": "",
+        "key": "收藏",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "进度",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 23
+        }
+      }
+    ]
+  },
+  "version": 1
+}

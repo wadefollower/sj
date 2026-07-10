@@ -1,0 +1,24 @@
+{
+  "source": "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/VerseRow.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "已背过",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "复习 %lld 次",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 37
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,24 @@
+{
+  "source": "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/TodayView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "背经",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "今日背诵",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 18
+        }
+      }
+    ]
+  },
+  "version": 1
+}

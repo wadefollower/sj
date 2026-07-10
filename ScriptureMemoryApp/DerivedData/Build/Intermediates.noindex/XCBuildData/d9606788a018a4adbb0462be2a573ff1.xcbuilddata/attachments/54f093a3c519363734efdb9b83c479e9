@@ -1,0 +1,108 @@
+{
+  "" : {
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryApp-master.dia",
+    "emit-module-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryApp-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryApp-master-emit-module.dia",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryApp-master.swiftdeps"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Models.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/Models~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/RootView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/RootView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/ScriptureMemoryAppApp.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureMemoryAppApp~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/ScriptureStore.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ScriptureStore~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/FavoritesView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/FavoritesView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/LibraryView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/LibraryView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/MemorizeView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/MemorizeView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/ProgressView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/ProgressView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/TodayView.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/TodayView~partial.swiftmodule"
+  },
+  "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/VerseRow.swift" : {
+    "const-values" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.swiftconstvalues",
+    "dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.d",
+    "diagnostics" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.dia",
+    "index-unit-output-path" : "/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.o",
+    "llvm-bc" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.bc",
+    "object" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.o",
+    "swift-dependencies" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow.swiftdeps",
+    "swiftmodule" : "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/DerivedData/Build/Intermediates.noindex/ScriptureMemoryApp.build/Debug-iphonesimulator/ScriptureMemoryApp.build/Objects-normal/x86_64/VerseRow~partial.swiftmodule"
+  }
+}

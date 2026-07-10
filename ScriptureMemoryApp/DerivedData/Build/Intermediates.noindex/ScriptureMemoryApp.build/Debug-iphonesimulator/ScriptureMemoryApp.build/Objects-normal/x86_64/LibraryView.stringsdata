@@ -1,0 +1,24 @@
+{
+  "source": "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/LibraryView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "经文库",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "搜索经文、主题或出处",
+        "location": {
+          "startingColumn": 52,
+          "startingLine": 41
+        }
+      }
+    ]
+  },
+  "version": 1
+}

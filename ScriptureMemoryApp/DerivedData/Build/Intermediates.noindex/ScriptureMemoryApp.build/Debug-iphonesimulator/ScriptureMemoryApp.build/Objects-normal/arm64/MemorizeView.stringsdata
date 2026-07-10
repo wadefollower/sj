@@ -1,0 +1,96 @@
+{
+  "source": "/Users/young/Downloads/yy/app/sj/ScriptureMemoryApp/ScriptureMemoryApp/Views/MemorizeView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "模式",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "取消收藏",
+        "location": {
+          "startingColumn": 59,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "收藏",
+        "location": {
+          "startingColumn": 76,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "默写这节经文",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "显示更多提示",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 110
+        }
+      },
+      {
+        "comment": "",
+        "key": "标记为已背过",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 119
+        }
+      },
+      {
+        "comment": "",
+        "key": "重置这节进度",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
+        "key": "复习次数：%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 141
+        }
+      },
+      {
+        "comment": "",
+        "key": "上次复习：%@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 145
+        }
+      },
+      {
+        "comment": "",
+        "key": "已背过",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 138
+        }
+      },
+      {
+        "comment": "",
+        "key": "还在练习",
+        "location": {
+          "startingColumn": 56,
+          "startingLine": 138
+        }
+      }
+    ]
+  },
+  "version": 1
+}
