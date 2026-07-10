@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">背经</title>
+  <rect width="512" height="512" rx="96" fill="#2f7567"/>
+  <path d="M132 116h168c44 0 80 36 80 80v200H180c-26 0-48-22-48-48V116z" fill="#fffdf8"/>
+  <path d="M180 116h200v236c0 24-20 44-44 44H180V116z" fill="#efe9df"/>
+  <path d="M180 116v280" stroke="#c7b9a5" stroke-width="12" stroke-linecap="round"/>
+  <path d="M224 184h96M224 236h104M224 288h72" stroke="#2f7567" stroke-width="22" stroke-linecap="round"/>
+  <path d="M142 120c26 0 38 18 38 40v236c0-28-18-48-48-48V120h10z" fill="#d7cab8"/>
+  <circle cx="364" cy="156" r="44" fill="#c88b2d"/>
+  <path d="M364 132v48M340 156h48" stroke="#fffdf8" stroke-width="16" stroke-linecap="round"/>
+</svg>
